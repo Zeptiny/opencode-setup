@@ -40,7 +40,7 @@
       "url": "https://mcp.tavily.com/mcp/",
       "enabled": true,
       "headers": {
-        "Authorization": "Bearer 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"
+        "Authorization": "Bearer <CHANGE-ME>"
       }
     }
   },
