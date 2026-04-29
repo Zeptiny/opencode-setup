@@ -5,6 +5,9 @@ The skills were sourced from:
 - https://github.com/obra/superpowers
 - https://github.com/anthropics/skills
 
+# Plugins
+- https://github.com/Zeptiny/opencode-skill-injection-plugin
+
 # Changes
 ## using-superpowers/SKILL.md
 - Replaced multi-platform instructions (Claude Code, Copilot CLI, Gemini CLI, Codex) with single OpenCode section referencing skill tool (skill({ name: "skill-name" }))
