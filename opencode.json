@@ -42,6 +42,10 @@
       "headers": {
         "Authorization": "Bearer <CHANGE-ME>"
       }
+    },
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp"
     }
   },
   "permission": {
