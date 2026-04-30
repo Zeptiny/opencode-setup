@@ -98,8 +98,7 @@ requesting-code-review/SKILL.md
 ## systematic-debugging/SKILL.md
 - Consolidated into single file per OpenCode skill conventions
 - Inlined content from root-cause-tracing.md, defense-in-depth.md, and condition-based-waiting.md as new Technique sections
-- Inlined find-polluter.sh shell script as code block in Root Cause Tracing section
-- Inlined condition-based-waiting-example.ts as code block in Condition-Based Waiting section
+
 - Replaced external file references with internal section links
 - Changed superpowers:test-driven-development → test-driven-development (2 occurrences)
 - Changed superpowers:verification-before-completion → verification-before-completion

@@ -356,75 +356,17 @@ npm test 2>&1 | grep 'DEBUG git init'
 
 ### Finding Which Test Causes Pollution
 
-If something appears during tests but you don't know which test, use bisection:
+If something appears during tests but you don't know which test:
 
+**Use bisection:** Run tests one-by-one, check for pollution after each.
 ```bash
-#!/usr/bin/env bash
-# Bisection script to find which test creates unwanted files/state
-# Usage: ./find-polluter.sh <file_or_dir_to_check> <test_pattern>
-# Example: ./find-polluter.sh '.git' 'src/**/*.test.ts'
-
-set -e
-
-if [ $# -ne 2 ]; then
-  echo "Usage: $0 <file_to_check> <test_pattern>"
-  echo "Example: $0 '.git' 'src/**/*.test.ts'"
-  exit 1
-fi
-
-POLLUTION_CHECK="$1"
-TEST_PATTERN="$2"
-
-echo "🔍 Searching for test that creates: $POLLUTION_CHECK"
-echo "Test pattern: $TEST_PATTERN"
-echo ""
-
-# Get list of test files
-TEST_FILES=$(find . -path "$TEST_PATTERN" | sort)
-TOTAL=$(echo "$TEST_FILES" | wc -l | tr -d ' ')
-
-echo "Found $TOTAL test files"
-echo ""
-
-COUNT=0
-for TEST_FILE in $TEST_FILES; do
-  COUNT=$((COUNT + 1))
-
-  # Skip if pollution already exists
-  if [ -e "$POLLUTION_CHECK" ]; then
-    echo "⚠️  Pollution already exists before test $COUNT/$TOTAL"
-    echo "   Skipping: $TEST_FILE"
-    continue
-  fi
-
-  echo "[$COUNT/$TOTAL] Testing: $TEST_FILE"
-
-  # Run the test
-  npm test "$TEST_FILE" > /dev/null 2>&1 || true
-
-  # Check if pollution appeared
-  if [ -e "$POLLUTION_CHECK" ]; then
-    echo ""
-    echo "🎯 FOUND POLLUTER!"
-    echo "   Test: $TEST_FILE"
-    echo "   Created: $POLLUTION_CHECK"
-    echo ""
-    echo "Pollution details:"
-    ls -la "$POLLUTION_CHECK"
-    echo ""
-    echo "To investigate:"
-    echo "  npm test $TEST_FILE    # Run just this test"
-    echo "  cat $TEST_FILE         # Review test code"
-    exit 1
-  fi
+for test in $(find . -path 'src/**/*.test.ts' | sort); do
+  npm test "$test" > /dev/null 2>&1 || true
+  [ -e '.git' ] && echo "Polluter: $test" && exit 1
 done
-
-echo ""
-echo "✅ No polluter found - all tests clean!"
-exit 0
 ```
 
-Runs tests one-by-one, stops at first polluter.
+Or use your test runner's isolation mode if available.
 
 ### Key Principle
 
@@ -591,107 +533,6 @@ async function waitFor<T>(
 
     await new Promise(r => setTimeout(r, 10)); // Poll every 10ms
   }
-}
-```
-
-### Domain-Specific Helpers
-
-Complete implementation with helpers from actual debugging session:
-```typescript
-import type { ThreadManager } from '~/threads/thread-manager';
-import type { LaceEvent, LaceEventType } from '~/threads/types';
-
-/**
- * Wait for a specific event type to appear in thread
- */
-export function waitForEvent(
-  threadManager: ThreadManager,
-  threadId: string,
-  eventType: LaceEventType,
-  timeoutMs = 5000
-): Promise<LaceEvent> {
-  return new Promise((resolve, reject) => {
-    const startTime = Date.now();
-
-    const check = () => {
-      const events = threadManager.getEvents(threadId);
-      const event = events.find((e) => e.type === eventType);
-
-      if (event) {
-        resolve(event);
-      } else if (Date.now() - startTime > timeoutMs) {
-        reject(new Error(`Timeout waiting for ${eventType} event after ${timeoutMs}ms`));
-      } else {
-        setTimeout(check, 10); // Poll every 10ms for efficiency
-      }
-    };
-
-    check();
-  });
-}
-
-/**
- * Wait for a specific number of events of a given type
- */
-export function waitForEventCount(
-  threadManager: ThreadManager,
-  threadId: string,
-  eventType: LaceEventType,
-  count: number,
-  timeoutMs = 5000
-): Promise<LaceEvent[]> {
-  return new Promise((resolve, reject) => {
-    const startTime = Date.now();
-
-    const check = () => {
-      const events = threadManager.getEvents(threadId);
-      const matchingEvents = events.filter((e) => e.type === eventType);
-
-      if (matchingEvents.length >= count) {
-        resolve(matchingEvents);
-      } else if (Date.now() - startTime > timeoutMs) {
-        reject(
-          new Error(
-            `Timeout waiting for ${count} ${eventType} events after ${timeoutMs}ms (got ${matchingEvents.length})`
-          )
-        );
-      } else {
-        setTimeout(check, 10);
-      }
-    };
-
-    check();
-  });
-}
-
-/**
- * Wait for an event matching a custom predicate
- */
-export function waitForEventMatch(
-  threadManager: ThreadManager,
-  threadId: string,
-  predicate: (event: LaceEvent) => boolean,
-  description: string,
-  timeoutMs = 5000
-): Promise<LaceEvent> {
-  return new Promise((resolve, reject) => {
-    const startTime = Date.now();
-
-    const check = () => {
-      const events = threadManager.getEvents(threadId);
-      const event = events.find(predicate);
-
-      if (event) {
-        resolve(event);
-      } else if (Date.now() - startTime > timeoutMs) {
-        reject(new Error(`Timeout waiting for ${description} after ${timeoutMs}ms`));
-      } else {
-        setTimeout(check, 10);
-      }
-    };
-
-    check();
-  });
 }
 ```
 
