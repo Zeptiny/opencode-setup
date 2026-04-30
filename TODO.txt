@@ -10,3 +10,8 @@ using-superpowers
 verification-before-completion
 writing-plans
 writing-skills
+
+
+verify agents
+
+verify calling agents names on skills

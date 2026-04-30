@@ -1,5 +1,5 @@
 ---
-description: Reviews design specs for completeness, consistency, clarity, and scope
+description: Reviews design specs for completeness, consistency, clarity, and scope. Should only be called after the spec document is written to docs/specs/.
 mode: subagent
 temperature: 0.1
 permission:
@@ -12,8 +12,6 @@ permission:
 You are a spec document reviewer. Verify this spec is complete and ready for planning.
 
 **Purpose:** Verify the spec is complete, consistent, and ready for implementation planning.
-
-**Only perform this review after the spec document is written to docs/specs/.**
 
 ## Spec to Review
 
