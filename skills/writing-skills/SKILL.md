@@ -287,39 +287,26 @@ Use skill name only, with explicit requirement markers:
 
 **Why no @ links:** `@` syntax force-loads files immediately, consuming 200k+ context before you need them.
 
-## Flowchart Usage
+## Decision Flow Usage
 
-```dot
-digraph when_flowchart {
-    "Need to show information?" [shape=diamond];
-    "Decision where I might go wrong?" [shape=diamond];
-    "Use markdown" [shape=box];
-    "Small inline flowchart" [shape=box];
+**When to use a flow summary:**
 
-    "Need to show information?" -> "Decision where I might go wrong?" [label="yes"];
-    "Decision where I might go wrong?" -> "Small inline flowchart" [label="yes"];
-    "Decision where I might go wrong?" -> "Use markdown" [label="no"];
-}
-```
+1. **Need to show information?**
+   - *Yes* → **Decision where I might go wrong?**
+     - *Yes* → Use a **small inline flow summary**
+     - *No* → **Use markdown**
+   - *No* → **Use markdown**
 
-**Use flowcharts ONLY for:**
+**Use flow summaries ONLY for:**
 - Non-obvious decision points
 - Process loops where you might stop too early
 - "When to use A vs B" decisions
 
-**Never use flowcharts for:**
+**Never use flow summaries for:**
 - Reference material → Tables, lists
 - Code examples → Markdown blocks
 - Linear instructions → Numbered lists
 - Labels without semantic meaning (step1, helper2)
-
-See @graphviz-conventions.dot for graphviz style rules.
-
-**Visualizing for your human partner:** Use `render-graphs.js` in this directory to render a skill's flowcharts to SVG:
-```bash
-./render-graphs.js ../some-skill           # Each diagram separately
-./render-graphs.js ../some-skill --combine # All diagrams in one SVG
-```
 
 ## Code Examples
 
@@ -569,10 +556,11 @@ Agent found new rationalization? Add explicit counter. Re-test until bulletproof
 example-js.js, example-py.py, example-go.go
 **Why bad:** Mediocre quality, maintenance burden
 
-### ❌ Code in Flowcharts
-```dot
-step1 [label="import fs"];
-step2 [label="read file"];
+### ❌ Code in Decision Flows
+Using code snippets as flow steps:
+```
+Step 1: import fs
+Step 2: read file
 ```
 **Why bad:** Can't copy-paste, hard to read
 
@@ -622,7 +610,7 @@ Deploying untested skills = deploying untested code. It's a violation of quality
 - [ ] Re-test until bulletproof
 
 **Quality Checks:**
-- [ ] Small flowchart only if decision non-obvious
+- [ ] Small flow summary only if decision non-obvious
 - [ ] Quick reference table
 - [ ] Common mistakes section
 - [ ] No narrative storytelling
