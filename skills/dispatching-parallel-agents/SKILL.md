@@ -15,23 +15,14 @@ When you have multiple unrelated failures (different test files, different subsy
 
 ## When to Use
 
-```dot
-digraph when_to_use {
-    "Multiple failures?" [shape=diamond];
-    "Are they independent?" [shape=diamond];
-    "Single agent investigates all" [shape=box];
-    "One agent per problem domain" [shape=box];
-    "Can they work in parallel?" [shape=diamond];
-    "Sequential agents" [shape=box];
-    "Parallel dispatch" [shape=box];
+**Decision flow:**
 
-    "Multiple failures?" -> "Are they independent?" [label="yes"];
-    "Are they independent?" -> "Single agent investigates all" [label="no - related"];
-    "Are they independent?" -> "Can they work in parallel?" [label="yes"];
-    "Can they work in parallel?" -> "Parallel dispatch" [label="yes"];
-    "Can they work in parallel?" -> "Sequential agents" [label="no - shared state"];
-}
-```
+1. **Multiple failures?**
+   - *Yes* → **Are they independent?**
+     - *No — related* → **Single agent investigates all**
+     - *Yes* → **Can they work in parallel?**
+       - *Yes* → **Parallel dispatch** (one agent per problem domain)
+       - *No — shared state* → **Sequential agents**
 
 **Use when:**
 - 3+ test files failing with different root causes
