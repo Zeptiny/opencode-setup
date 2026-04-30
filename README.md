@@ -8,6 +8,9 @@ The skills were sourced from:
 # Plugins
 - https://github.com/Zeptiny/opencode-skill-injection-plugin
 
+# Third-party tools
+- https://github.com/junhoyeo/tokscale
+
 # Changes
 ## using-superpowers/SKILL.md
 - Replaced multi-platform instructions (Claude Code, Copilot CLI, Gemini CLI, Codex) with single OpenCode section referencing skill tool (skill({ name: "skill-name" }))
