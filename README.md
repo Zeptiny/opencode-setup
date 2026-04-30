@@ -57,6 +57,12 @@ requesting-code-review/SKILL.md
 ## writing-plans/SKILL.md
 - Changed docs/superpowers/plans/ → docs/plans/ (3 occurrences)
 - Removed superpowers: prefix from 3 cross-skill references
+- Added Plan Review section with plan-reviewer subagent dispatch instructions
+
+### agents/plan-reviewer.md
+- Moved from skills/writing-plans/plan-document-reviewer-prompt.md
+- Transformed from prompt template into standalone agent with proper frontmatter
+- Removed template placeholders and Task tool wrapper
 
 ## writing-skills/SKILL.md
 - Changed ~/.claude/skills → ~/.config/opencode/skills and added OpenCode to the list

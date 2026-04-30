@@ -131,6 +131,24 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 
+## Plan Review (Optional)
+
+For complex plans, dispatch a `plan-reviewer` subagent to verify completeness before execution handoff.
+
+Use the `task` tool (`subagent_type: plan-reviewer`) with the following base template:
+
+```markdown
+## Plan to Review
+<Path to plan document>
+
+## Spec for Reference
+<Path to spec document>
+```
+
+**Reviewer returns:** Status (Approved | Issues Found), Issues (if any), Recommendations
+
+Act on any issues found before proceeding to execution handoff.
+
 ## Execution Handoff
 
 After saving the plan, offer execution choice:
