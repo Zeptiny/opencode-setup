@@ -111,13 +111,15 @@ You MUST complete each phase before proceeding to the next.
 
    **WHEN error is deep in call stack:**
 
-   See `root-cause-tracing.md` in this directory for the complete backward tracing technique.
+   Trace backward through the call chain until you find the original trigger, then fix at the source.
 
    **Quick version:**
    - Where does bad value originate?
    - What called this with bad value?
    - Keep tracing up until you find the source
    - Fix at source, not at symptom
+
+   See **Technique: Root Cause Tracing** below for the complete process.
 
 ### Phase 2: Pattern Analysis
 
@@ -275,13 +277,450 @@ If systematic investigation reveals issue is truly environmental, timing-depende
 
 **But:** 95% of "no root cause" cases are incomplete investigation.
 
-## Supporting Techniques
+## Technique: Root Cause Tracing
 
-These techniques are part of systematic debugging and available in this directory:
+Bugs often manifest deep in the call stack (git init in wrong directory, file created in wrong location, database opened with wrong path). Your instinct is to fix where the error appears, but that's treating a symptom.
 
-- **`root-cause-tracing.md`** - Trace bugs backward through call stack to find original trigger
-- **`defense-in-depth.md`** - Add validation at multiple layers after finding root cause
-- **`condition-based-waiting.md`** - Replace arbitrary timeouts with condition polling
+**Core principle:** Trace backward through the call chain until you find the original trigger, then fix at the source.
+
+**Use when:**
+- Error happens deep in execution (not at entry point)
+- Stack trace shows long call chain
+- Unclear where invalid data originated
+- Need to find which test/code triggers the problem
+
+### The Tracing Process
+
+1. **Observe the Symptom**
+   ```
+   Error: git init failed in /Users/jesse/project/packages/core
+   ```
+
+2. **Find Immediate Cause**
+   What code directly causes this?
+   ```typescript
+   await execFileAsync('git', ['init'], { cwd: projectDir });
+   ```
+
+3. **Ask: What Called This?**
+   ```typescript
+   WorktreeManager.createSessionWorktree(projectDir, sessionId)
+     → called by Session.initializeWorkspace()
+     → called by Session.create()
+     → called by test at Project.create()
+   ```
+
+4. **Keep Tracing Up**
+   What value was passed?
+   - `projectDir = ''` (empty string!)
+   - Empty string as `cwd` resolves to `process.cwd()`
+   - That's the source code directory!
+
+5. **Find Original Trigger**
+   Where did empty string come from?
+   ```typescript
+   const context = setupCoreTest(); // Returns { tempDir: '' }
+   Project.create('name', context.tempDir); // Accessed before beforeEach!
+   ```
+
+### Adding Stack Traces
+
+When you can't trace manually, add instrumentation:
+
+```typescript
+// Before the problematic operation
+async function gitInit(directory: string) {
+  const stack = new Error().stack;
+  console.error('DEBUG git init:', {
+    directory,
+    cwd: process.cwd(),
+    nodeEnv: process.env.NODE_ENV,
+    stack,
+  });
+
+  await execFileAsync('git', ['init'], { cwd: directory });
+}
+```
+
+**Critical:** Use `console.error()` in tests (not logger - may not show)
+
+**Run and capture:**
+```bash
+npm test 2>&1 | grep 'DEBUG git init'
+```
+
+**Analyze stack traces:**
+- Look for test file names
+- Find the line number triggering the call
+- Identify the pattern (same test? same parameter?)
+
+### Finding Which Test Causes Pollution
+
+If something appears during tests but you don't know which test, use bisection:
+
+```bash
+#!/usr/bin/env bash
+# Bisection script to find which test creates unwanted files/state
+# Usage: ./find-polluter.sh <file_or_dir_to_check> <test_pattern>
+# Example: ./find-polluter.sh '.git' 'src/**/*.test.ts'
+
+set -e
+
+if [ $# -ne 2 ]; then
+  echo "Usage: $0 <file_to_check> <test_pattern>"
+  echo "Example: $0 '.git' 'src/**/*.test.ts'"
+  exit 1
+fi
+
+POLLUTION_CHECK="$1"
+TEST_PATTERN="$2"
+
+echo "🔍 Searching for test that creates: $POLLUTION_CHECK"
+echo "Test pattern: $TEST_PATTERN"
+echo ""
+
+# Get list of test files
+TEST_FILES=$(find . -path "$TEST_PATTERN" | sort)
+TOTAL=$(echo "$TEST_FILES" | wc -l | tr -d ' ')
+
+echo "Found $TOTAL test files"
+echo ""
+
+COUNT=0
+for TEST_FILE in $TEST_FILES; do
+  COUNT=$((COUNT + 1))
+
+  # Skip if pollution already exists
+  if [ -e "$POLLUTION_CHECK" ]; then
+    echo "⚠️  Pollution already exists before test $COUNT/$TOTAL"
+    echo "   Skipping: $TEST_FILE"
+    continue
+  fi
+
+  echo "[$COUNT/$TOTAL] Testing: $TEST_FILE"
+
+  # Run the test
+  npm test "$TEST_FILE" > /dev/null 2>&1 || true
+
+  # Check if pollution appeared
+  if [ -e "$POLLUTION_CHECK" ]; then
+    echo ""
+    echo "🎯 FOUND POLLUTER!"
+    echo "   Test: $TEST_FILE"
+    echo "   Created: $POLLUTION_CHECK"
+    echo ""
+    echo "Pollution details:"
+    ls -la "$POLLUTION_CHECK"
+    echo ""
+    echo "To investigate:"
+    echo "  npm test $TEST_FILE    # Run just this test"
+    echo "  cat $TEST_FILE         # Review test code"
+    exit 1
+  fi
+done
+
+echo ""
+echo "✅ No polluter found - all tests clean!"
+exit 0
+```
+
+Runs tests one-by-one, stops at first polluter.
+
+### Key Principle
+
+**NEVER fix just where the error appears.** Trace back to find the original trigger.
+
+**Stack Trace Tips:**
+- **In tests:** Use `console.error()` not logger - logger may be suppressed
+- **Before operation:** Log before the dangerous operation, not after it fails
+- **Include context:** Directory, cwd, environment variables, timestamps
+- **Capture stack:** `new Error().stack` shows complete call chain
+
+---
+
+## Technique: Defense-in-Depth Validation
+
+When you fix a bug caused by invalid data, adding validation at one place feels sufficient. But that single check can be bypassed by different code paths, refactoring, or mocks.
+
+**Core principle:** Validate at EVERY layer data passes through. Make the bug structurally impossible.
+
+### Why Multiple Layers
+
+Single validation: "We fixed the bug"
+Multiple layers: "We made the bug impossible"
+
+Different layers catch different cases:
+- Entry validation catches most bugs
+- Business logic catches edge cases
+- Environment guards prevent context-specific dangers
+- Debug logging helps when other layers fail
+
+### The Four Layers
+
+**Layer 1: Entry Point Validation**
+Purpose: Reject obviously invalid input at API boundary
+```typescript
+function createProject(name: string, workingDirectory: string) {
+  if (!workingDirectory || workingDirectory.trim() === '') {
+    throw new Error('workingDirectory cannot be empty');
+  }
+  if (!existsSync(workingDirectory)) {
+    throw new Error(`workingDirectory does not exist: ${workingDirectory}`);
+  }
+  if (!statSync(workingDirectory).isDirectory()) {
+    throw new Error(`workingDirectory is not a directory: ${workingDirectory}`);
+  }
+  // ... proceed
+}
+```
+
+**Layer 2: Business Logic Validation**
+Purpose: Ensure data makes sense for this operation
+```typescript
+function initializeWorkspace(projectDir: string, sessionId: string) {
+  if (!projectDir) {
+    throw new Error('projectDir required for workspace initialization');
+  }
+  // ... proceed
+}
+```
+
+**Layer 3: Environment Guards**
+Purpose: Prevent dangerous operations in specific contexts
+```typescript
+async function gitInit(directory: string) {
+  // In tests, refuse git init outside temp directories
+  if (process.env.NODE_ENV === 'test') {
+    const normalized = normalize(resolve(directory));
+    const tmpDir = normalize(resolve(tmpdir()));
+
+    if (!normalized.startsWith(tmpDir)) {
+      throw new Error(
+        `Refusing git init outside temp dir during tests: ${directory}`
+      );
+    }
+  }
+  // ... proceed
+}
+```
+
+**Layer 4: Debug Instrumentation**
+Purpose: Capture context for forensics
+```typescript
+async function gitInit(directory: string) {
+  const stack = new Error().stack;
+  logger.debug('About to git init', {
+    directory,
+    cwd: process.cwd(),
+    stack,
+  });
+  // ... proceed
+}
+```
+
+### Applying the Pattern
+
+When you find a bug:
+1. **Trace the data flow** - Where does bad value originate? Where used?
+2. **Map all checkpoints** - List every point data passes through
+3. **Add validation at each layer** - Entry, business, environment, debug
+4. **Test each layer** - Try to bypass layer 1, verify layer 2 catches it
+
+**Key insight:** All four layers are often necessary. Different code paths bypass entry validation, mocks bypass business logic, edge cases need environment guards. Don't stop at one validation point.
+
+---
+
+## Technique: Condition-Based Waiting
+
+Flaky tests often guess at timing with arbitrary delays. This creates race conditions where tests pass on fast machines but fail under load or in CI.
+
+**Core principle:** Wait for the actual condition you care about, not a guess about how long it takes.
+
+**Use when:**
+- Tests have arbitrary delays (`setTimeout`, `sleep`, `time.sleep()`)
+- Tests are flaky (pass sometimes, fail under load)
+- Tests timeout when run in parallel
+- Waiting for async operations to complete
+
+**Don't use when:**
+- Testing actual timing behavior (debounce, throttle intervals)
+- Always document WHY if using arbitrary timeout
+
+### Core Pattern
+
+```typescript
+// ❌ BEFORE: Guessing at timing
+await new Promise(r => setTimeout(r, 50));
+const result = getResult();
+expect(result).toBeDefined();
+
+// ✅ AFTER: Waiting for condition
+await waitFor(() => getResult() !== undefined);
+const result = getResult();
+expect(result).toBeDefined();
+```
+
+### Quick Patterns
+
+| Scenario | Pattern |
+|----------|---------|
+| Wait for event | `waitFor(() => events.find(e => e.type === 'DONE'))` |
+| Wait for state | `waitFor(() => machine.state === 'ready')` |
+| Wait for count | `waitFor(() => items.length >= 5)` |
+| Wait for file | `waitFor(() => fs.existsSync(path))` |
+| Complex condition | `waitFor(() => obj.ready && obj.value > 10)` |
+
+### Implementation
+
+Generic polling function:
+```typescript
+async function waitFor<T>(
+  condition: () => T | undefined | null | false,
+  description: string,
+  timeoutMs = 5000
+): Promise<T> {
+  const startTime = Date.now();
+
+  while (true) {
+    const result = condition();
+    if (result) return result;
+
+    if (Date.now() - startTime > timeoutMs) {
+      throw new Error(`Timeout waiting for ${description} after ${timeoutMs}ms`);
+    }
+
+    await new Promise(r => setTimeout(r, 10)); // Poll every 10ms
+  }
+}
+```
+
+### Domain-Specific Helpers
+
+Complete implementation with helpers from actual debugging session:
+```typescript
+import type { ThreadManager } from '~/threads/thread-manager';
+import type { LaceEvent, LaceEventType } from '~/threads/types';
+
+/**
+ * Wait for a specific event type to appear in thread
+ */
+export function waitForEvent(
+  threadManager: ThreadManager,
+  threadId: string,
+  eventType: LaceEventType,
+  timeoutMs = 5000
+): Promise<LaceEvent> {
+  return new Promise((resolve, reject) => {
+    const startTime = Date.now();
+
+    const check = () => {
+      const events = threadManager.getEvents(threadId);
+      const event = events.find((e) => e.type === eventType);
+
+      if (event) {
+        resolve(event);
+      } else if (Date.now() - startTime > timeoutMs) {
+        reject(new Error(`Timeout waiting for ${eventType} event after ${timeoutMs}ms`));
+      } else {
+        setTimeout(check, 10); // Poll every 10ms for efficiency
+      }
+    };
+
+    check();
+  });
+}
+
+/**
+ * Wait for a specific number of events of a given type
+ */
+export function waitForEventCount(
+  threadManager: ThreadManager,
+  threadId: string,
+  eventType: LaceEventType,
+  count: number,
+  timeoutMs = 5000
+): Promise<LaceEvent[]> {
+  return new Promise((resolve, reject) => {
+    const startTime = Date.now();
+
+    const check = () => {
+      const events = threadManager.getEvents(threadId);
+      const matchingEvents = events.filter((e) => e.type === eventType);
+
+      if (matchingEvents.length >= count) {
+        resolve(matchingEvents);
+      } else if (Date.now() - startTime > timeoutMs) {
+        reject(
+          new Error(
+            `Timeout waiting for ${count} ${eventType} events after ${timeoutMs}ms (got ${matchingEvents.length})`
+          )
+        );
+      } else {
+        setTimeout(check, 10);
+      }
+    };
+
+    check();
+  });
+}
+
+/**
+ * Wait for an event matching a custom predicate
+ */
+export function waitForEventMatch(
+  threadManager: ThreadManager,
+  threadId: string,
+  predicate: (event: LaceEvent) => boolean,
+  description: string,
+  timeoutMs = 5000
+): Promise<LaceEvent> {
+  return new Promise((resolve, reject) => {
+    const startTime = Date.now();
+
+    const check = () => {
+      const events = threadManager.getEvents(threadId);
+      const event = events.find(predicate);
+
+      if (event) {
+        resolve(event);
+      } else if (Date.now() - startTime > timeoutMs) {
+        reject(new Error(`Timeout waiting for ${description} after ${timeoutMs}ms`));
+      } else {
+        setTimeout(check, 10);
+      }
+    };
+
+    check();
+  });
+}
+```
+
+### Common Mistakes
+
+**❌ Polling too fast:** `setTimeout(check, 1)` - wastes CPU
+**✅ Fix:** Poll every 10ms
+
+**❌ No timeout:** Loop forever if condition never met
+**✅ Fix:** Always include timeout with clear error
+
+**❌ Stale data:** Cache state before loop
+**✅ Fix:** Call getter inside loop for fresh data
+
+### When Arbitrary Timeout IS Correct
+
+```typescript
+// Tool ticks every 100ms - need 2 ticks to verify partial output
+await waitForEvent(manager, 'TOOL_STARTED'); // First: wait for condition
+await new Promise(r => setTimeout(r, 200));   // Then: wait for timed behavior
+// 200ms = 2 ticks at 100ms intervals - documented and justified
+```
+
+**Requirements:**
+1. First wait for triggering condition
+2. Based on known timing (not guessing)
+3. Comment explaining WHY
+
+---
 
 **Related skills:**
 - **test-driven-development** - For creating failing test case (Phase 4, Step 1)
