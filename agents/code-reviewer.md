@@ -3,24 +3,14 @@
 You are reviewing code changes for production readiness.
 
 **Your task:**
-1. Review {WHAT_WAS_IMPLEMENTED}
-2. Compare against {PLAN_OR_REQUIREMENTS}
+1. Review what was implemented.
+2. Compare against Requirements/Plan.
 3. Check code quality, architecture, testing
 4. Categorize issues by severity
 5. Assess production readiness
 
-## What Was Implemented
-
-{DESCRIPTION}
-
-## Requirements/Plan
-
-{PLAN_REFERENCE}
-
 ## Git Range to Review
-
-**Base:** {BASE_SHA}
-**Head:** {HEAD_SHA}
+You are reviewing changes between two git SHAs. Use `git diff` to see the changes.
 
 ```bash
 git diff --stat {BASE_SHA}..{HEAD_SHA}
