@@ -125,5 +125,17 @@ requesting-code-review/SKILL.md
 ### Removed files
 - skills/test-driven-development/testing-anti-patterns.md
 
+## python-patterns/SKILL.md
+- Rewrote description from generic summary to trigger-style: "Use when writing, creating, or modifying Python code, scripts, modules, packages, or applications..."
+
+## python-testing/SKILL.md
+- Rewrote description from generic summary to trigger-style: "Use when writing, creating, or modifying Python tests, test files, test suites, or testing infrastructure..."
+
+## frontend-patterns/SKILL.md
+- Rewrote description from generic summary to trigger-style: "Use when building, creating, or modifying frontend web applications, React components, Next.js pages..."
+
+## frontend-design/SKILL.md
+- Rewrote description to lead with "Use when..." and expanded trigger keywords (visual design, UI/UX, styling, layout, typography, colors, aesthetics, polished, modern, distinctive)
+
 ## receiving-code-review/SKILL.md
 - Changed CLAUDE.md violation → AGENTS.md violation

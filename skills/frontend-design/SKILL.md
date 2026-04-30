@@ -1,6 +1,6 @@
 ---
 name: frontend-design
-description: Create distinctive, production-grade frontend interfaces with high design quality. Use when the user asks to build web components, pages, or applications and the visual direction matters as much as the code quality.
+description: "Use when building web components, pages, applications, or user interfaces where visual design, UI/UX, styling, layout, typography, colors, or aesthetics matter. Also use when the user asks to make something look good, professional, polished, modern, or distinctive, or when frontend work requires design decisions beyond just making it functional."
 origin: ECC
 ---
 
