@@ -13,23 +13,15 @@ Execute plan by dispatching fresh subagent per task, with two-stage review after
 
 ## When to Use
 
-```dot
-digraph when_to_use {
-    "Have implementation plan?" [shape=diamond];
-    "Tasks mostly independent?" [shape=diamond];
-    "Stay in this session?" [shape=diamond];
-    "subagent-driven-development" [shape=box];
-    "executing-plans" [shape=box];
-    "Manual execution or brainstorm first" [shape=box];
+**Decision flow:**
 
-    "Have implementation plan?" -> "Tasks mostly independent?" [label="yes"];
-    "Have implementation plan?" -> "Manual execution or brainstorm first" [label="no"];
-    "Tasks mostly independent?" -> "Stay in this session?" [label="yes"];
-    "Tasks mostly independent?" -> "Manual execution or brainstorm first" [label="no - tightly coupled"];
-    "Stay in this session?" -> "subagent-driven-development" [label="yes"];
-    "Stay in this session?" -> "executing-plans" [label="no - parallel session"];
-}
-```
+1. **Have implementation plan?**
+   - *No* → **Manual execution or brainstorm first**
+   - *Yes* → **Tasks mostly independent?**
+     - *No — tightly coupled* → **Manual execution or brainstorm first**
+     - *Yes* → **Stay in this session?**
+       - *Yes* → Use **subagent-driven-development**
+       - *No — parallel session* → Use **executing-plans**
 
 **vs. Executing Plans (parallel session):**
 - Same session (no context switch)
@@ -39,45 +31,24 @@ digraph when_to_use {
 
 ## The Process
 
-```dot
-digraph process {
-    rankdir=TB;
+**Per-task flow:**
 
-    subgraph cluster_per_task {
-        label="Per Task";
-        "Dispatch implementer subagent (subagent_type: implementer)" [shape=box];
-        "Implementer subagent asks questions?" [shape=diamond];
-        "Answer questions, provide context" [shape=box];
-        "Implementer subagent implements, tests, commits, self-reviews" [shape=box];
-        "Dispatch spec reviewer subagent (subagent_type: spec-reviewer)" [shape=box];
-        "Spec reviewer subagent confirms code matches spec?" [shape=diamond];
-        "Implementer subagent fixes spec gaps" [shape=box];
-        "Dispatch code quality reviewer subagent (subagent_type: code-quality-reviewer)" [shape=box];
-        "Code quality reviewer subagent approves?" [shape=diamond];
-        "Implementer subagent fixes quality issues" [shape=box];
-        "Mark task complete in todowrite" [shape=box];
-    }
-
-    "Read plan, extract all tasks with full text, note context, create todowrite" [shape=box];
-    "More tasks remain?" [shape=diamond];
-    "Dispatch final code reviewer subagent for entire implementation" [shape=box];
-    "Use finishing-a-development-branch" [shape=box style=filled fillcolor=lightgreen];
-
-    "Read plan, extract all tasks with full text, note context, create todowrite" -> "Dispatch implementer subagent (subagent_type: implementer)";
-    "Dispatch implementer subagent (subagent_type: implementer)" -> "Implementer subagent asks questions?";
-    "Answer questions, provide context" -> "Dispatch implementer subagent (subagent_type: implementer)";
-    "Implementer subagent implements, tests, commits, self-reviews" -> "Dispatch spec reviewer subagent (subagent_type: spec-reviewer)";
-    "Dispatch spec reviewer subagent (subagent_type: spec-reviewer)" -> "Spec reviewer subagent confirms code matches spec?";
-    "Implementer subagent fixes spec gaps" -> "Dispatch spec reviewer subagent (subagent_type: spec-reviewer)" [label="re-review"];
-    "Spec reviewer subagent confirms code matches spec?" -> "Dispatch code quality reviewer subagent (subagent_type: code-quality-reviewer)" [label="yes"];
-    "Dispatch code quality reviewer subagent (subagent_type: code-quality-reviewer)" -> "Code quality reviewer subagent approves?";
-    "Implementer subagent fixes quality issues" -> "Dispatch code quality reviewer subagent (subagent_type: code-quality-reviewer)" [label="re-review"];
-    "Mark task complete in todowrite" -> "More tasks remain?";
-    "More tasks remain?" -> "Dispatch implementer subagent (subagent_type: implementer)" [label="yes"];
-    "More tasks remain?" -> "Dispatch final code reviewer subagent for entire implementation" [label="no"];
-    "Dispatch final code reviewer subagent for entire implementation" -> "Use finishing-a-development-branch";
-}
-```
+1. **Read plan, extract all tasks with full text, note context, create todowrite**
+2. **Dispatch implementer subagent** (subagent_type: implementer)
+   - **Implementer subagent asks questions?**
+     - *Yes* → **Answer questions, provide context** → Go back to **Dispatch implementer subagent**
+     - *No* → **Implementer subagent implements, tests, commits, self-reviews**
+3. **Dispatch spec reviewer subagent** (subagent_type: spec-reviewer)
+   - **Spec reviewer subagent confirms code matches spec?**
+     - *No* → **Implementer subagent fixes spec gaps** → Go back to **Dispatch spec reviewer subagent** *(re-review)*
+     - *Yes* → **Dispatch code quality reviewer subagent** (subagent_type: code-quality-reviewer)
+       - **Code quality reviewer subagent approves?**
+         - *No* → **Implementer subagent fixes quality issues** → Go back to **Dispatch code quality reviewer subagent** *(re-review)*
+         - *Yes* → **Mark task complete in todowrite**
+4. **More tasks remain?**
+   - *Yes* → Go back to **Dispatch implementer subagent** (next task)
+   - *No* → **Dispatch final code reviewer subagent for entire implementation**
+5. **Use finishing-a-development-branch**
 
 ## Model Selection
 
