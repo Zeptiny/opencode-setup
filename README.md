@@ -28,14 +28,20 @@ The skills were sourced from:
 - Removed all superpowers: prefixes from cross-skill references (6 entries in Integration section)
 - Changed superpowers:finishing-a-development-branch → finishing-a-development-branch in flowchart
 
-### subagent-driven-development/implementer-prompt.md
-- Changed Task tool (general-purpose): → task tool (general subagent_type):
+### agents/implementer.md
+- Moved from skills/subagent-driven-development/implementer-prompt.md
+- Transformed from prompt template into standalone agent
+- Removed template placeholders and task tool wrapper
 
-### subagent-driven-development/spec-reviewer-prompt.md
-- Changed Task tool (general-purpose): → task tool (general subagent_type):
+### agents/spec-reviewer.md
+- Moved from skills/subagent-driven-development/spec-reviewer-prompt.md
+- Transformed from prompt template into standalone agent
+- Removed template placeholders and task tool wrapper
 
-### subagent-driven-development/code-quality-reviewer-prompt.md
-- Changed Task tool (superpowers:code-reviewer): → task tool (general subagent_type):
+### agents/code-quality-reviewer.md
+- Moved from skills/subagent-driven-development/code-quality-reviewer-prompt.md
+- Transformed from prompt template into standalone agent
+- Combined standard code review checklist with subagent-driven-development specific checks
 requesting-code-review/SKILL.md
 - Changed superpowers:code-reviewer subagent → code-reviewer subagent
 - Changed Use Task tool with superpowers:code-reviewer type → Use the task tool (subagent_type: general)
