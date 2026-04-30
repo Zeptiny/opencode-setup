@@ -38,35 +38,19 @@ If AGENTS.md, CLAUDE.md, or GEMINI.md says "don't use TDD" and a skill says "alw
 
 **Invoke relevant or requested skills BEFORE any response or action.** Even a 1% chance a skill might apply means that you should invoke the skill to check. If an invoked skill turns out to be wrong for the situation, you don't need to use it.
 
-```dot
-digraph skill_flow {
-    "User message received" [shape=doublecircle];
-    "About to EnterPlanMode?" [shape=doublecircle];
-    "Already brainstormed?" [shape=diamond];
-    "Invoke brainstorming skill" [shape=box];
-    "Might any skill apply?" [shape=diamond];
-    "Invoke skill tool" [shape=box];
-    "Announce: 'Using [skill] to [purpose]'" [shape=box];
-    "Has checklist?" [shape=diamond];
-    "Create todowrite todo per item" [shape=box];
-    "Follow skill exactly" [shape=box];
-    "Respond (including clarifications)" [shape=doublecircle];
+**Skill invocation flow:**
 
-    "About to EnterPlanMode?" -> "Already brainstormed?";
-    "Already brainstormed?" -> "Invoke brainstorming skill" [label="no"];
-    "Already brainstormed?" -> "Might any skill apply?" [label="yes"];
-    "Invoke brainstorming skill" -> "Might any skill apply?";
-
-    "User message received" -> "Might any skill apply?";
-    "Might any skill apply?" -> "Invoke skill tool" [label="yes, even 1%"];
-    "Might any skill apply?" -> "Respond (including clarifications)" [label="definitely not"];
-    "Invoke skill tool" -> "Announce: 'Using [skill] to [purpose]'";
-    "Announce: 'Using [skill] to [purpose]'" -> "Has checklist?";
-    "Has checklist?" -> "Create todowrite todo per item" [label="yes"];
-    "Has checklist?" -> "Follow skill exactly" [label="no"];
-    "Create todowrite todo per item" -> "Follow skill exactly";
-}
-```
+- **User message received** → **Might any skill apply?**
+- **About to EnterPlanMode?** → **Already brainstormed?**
+  - *No* → **Invoke brainstorming skill** → **Might any skill apply?**
+  - *Yes* → **Might any skill apply?**
+- **Might any skill apply?**
+  - *Yes, even 1%* → **Invoke skill tool**
+    - **Announce: "Using [skill] to [purpose]"**
+    - **Has checklist?**
+      - *Yes* → **Create todowrite todo per item** → **Follow skill exactly**
+      - *No* → **Follow skill exactly**
+  - *Definitely not* → **Respond (including clarifications)**
 
 ## Red Flags
 
