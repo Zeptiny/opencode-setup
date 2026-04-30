@@ -105,6 +105,10 @@ requesting-code-review/SKILL.md
 - Replaced external file references with internal section links
 - Changed superpowers:test-driven-development → test-driven-development (2 occurrences)
 - Changed superpowers:verification-before-completion → verification-before-completion
+- Removed language-specific code examples (bash, TypeScript) and replaced them with language-agnostic conceptual descriptions
+- Replaced concrete implementation snippets (waitFor polling, stack trace capture, multi-layer diagnostics) with prose algorithm descriptions
+- Changed Defense in Depth table examples from code snippets to descriptive explanations
+- Replaced emoji-style anti-patterns (❌/✅) with labeled prose (Anti-pattern/Fix) in Condition-Based Waiting section
 
 ### Removed files
 - skills/systematic-debugging/root-cause-tracing.md

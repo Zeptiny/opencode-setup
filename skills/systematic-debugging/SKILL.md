@@ -74,38 +74,16 @@ You MUST complete each phase before proceeding to the next.
    **WHEN system has multiple components (CI → build → signing, API → service → database):**
 
    **BEFORE proposing fixes, add diagnostic instrumentation:**
-   ```
+
    For EACH component boundary:
-     - Log what data enters component
-     - Log what data exits component
-     - Verify environment/config propagation
-     - Check state at each layer
+   - Log what data enters component
+   - Log what data exits component
+   - Verify environment/config propagation
+   - Check state at each layer
 
-   Run once to gather evidence showing WHERE it breaks
-   THEN analyze evidence to identify failing component
-   THEN investigate that specific component
-   ```
-
-   **Example (multi-layer system):**
-   ```bash
-   # Layer 1: Workflow
-   echo "=== Secrets available in workflow: ==="
-   echo "IDENTITY: ${IDENTITY:+SET}${IDENTITY:-UNSET}"
-
-   # Layer 2: Build script
-   echo "=== Env vars in build script: ==="
-   env | grep IDENTITY || echo "IDENTITY not in environment"
-
-   # Layer 3: Signing script
-   echo "=== Keychain state: ==="
-   security list-keychains
-   security find-identity -v
-
-   # Layer 4: Actual signing
-   codesign --sign "$IDENTITY" --verbose=4 "$APP"
-   ```
-
-   **This reveals:** Which layer fails (secrets → workflow ✓, workflow → build ✗)
+   Run once to gather evidence showing WHERE it breaks.
+   THEN analyze evidence to identify failing component.
+   THEN investigate that specific component.
 
 5. **Trace Data Flow**
 
@@ -297,54 +275,30 @@ Bugs often manifest deep in the call stack (git init in wrong directory, file cr
 4. **Keep Tracing Up** — What value was passed? Is it valid here but wrong at source?
 5. **Find Original Trigger** — Where did the invalid value originate?
 
-**Example trace:**
-```
-Symptom:    git init failed in packages/core/
-Immediate:  git init with cwd = ''
-Called by:  WorkspaceManager.createWorkspace(projectDir)
-Value:      projectDir = '' (empty string resolves to process.cwd())
-Source:     Test accessed context.tempDir before beforeEach initialized it
-Fix:        Make tempDir a getter that throws if accessed too early
-```
-
 ### Adding Stack Traces
 
 When you can't trace manually, add instrumentation before the problematic operation:
 
-```typescript
-const stack = new Error().stack;
-console.error('DEBUG:', { param, cwd: process.cwd(), stack });
-```
-
-**Critical:** Use `console.error()` in tests (logger may be suppressed).
-
-**Run and capture:** `npm test 2>&1 | grep 'DEBUG:'`
-
-**Analyze:** Look for test file names, line numbers, and parameter patterns.
+- Capture the current call stack by creating a new Error and reading its stack property.
+- Log the relevant parameter values, the current working directory, and the captured stack to the standard error stream. In tests, always use standard error instead of a logger because log output may be suppressed.
+- Run the tests and filter the output to isolate your debug lines.
+- Analyze the captured output for test file names, line numbers, and parameter patterns to identify the original caller.
 
 ### Finding Which Test Causes Pollution
 
 If something appears during tests but you don't know which test:
 
-**Use bisection:** Run tests one-by-one, check for pollution after each.
-```bash
-for test in $(find . -path 'src/**/*.test.ts' | sort); do
-  npm test "$test" > /dev/null 2>&1 || true
-  [ -e '.git' ] && echo "Polluter: $test" && exit 1
-done
-```
-
-Or use your test runner's isolation mode if available.
+**Use bisection:** Run tests one-by-one, checking for pollution after each test. Iterate through the test files in order, run each individually, and verify whether the unwanted state appears. If it does, the last test run is the polluter. Alternatively, use your test runner's isolation mode if available.
 
 ### Key Principle
 
 **NEVER fix just where the error appears.** Trace back to find the original trigger.
 
 **Stack Trace Tips:**
-- **In tests:** Use `console.error()` not logger - logger may be suppressed
-- **Before operation:** Log before the dangerous operation, not after it fails
-- **Include context:** Directory, cwd, environment variables, timestamps
-- **Capture stack:** `new Error().stack` shows complete call chain
+- **In tests:** Use the standard error output method, not a logger, because log output may be suppressed.
+- **Before operation:** Log before the dangerous operation, not after it fails.
+- **Include context:** Directory, cwd, environment variables, timestamps.
+- **Capture stack:** Create a new Error and read its stack property to show the complete call chain.
 
 ---
 
@@ -369,10 +323,10 @@ Different layers catch different cases:
 
 | Layer | Purpose | Example |
 |-------|---------|---------|
-| **1. Entry Point** | Reject invalid input at API boundary | `if (!dir) throw new Error('dir required')` |
-| **2. Business Logic** | Ensure data makes sense for operation | `if (!existsSync(path)) throw new Error('path not found')` |
-| **3. Environment Guard** | Prevent dangerous ops in specific contexts | `if (isTest && !inTempDir(path)) throw new Error('unsafe')` |
-| **4. Debug Instrumentation** | Capture context for forensics | `console.error('DEBUG:', { path, cwd, stack })` |
+| **1. Entry Point** | Reject invalid input at API boundary | Throw an error if a required directory argument is missing or empty. |
+| **2. Business Logic** | Ensure data makes sense for operation | Throw an error if a required file or path does not exist before using it. |
+| **3. Environment Guard** | Prevent dangerous ops in specific contexts | Throw an error if a dangerous operation is attempted in a test environment outside a temporary directory. |
+| **4. Debug Instrumentation** | Capture context for forensics | Log the path, current working directory, and call stack to standard error for later analysis. |
 
 ### Applying the Pattern
 
@@ -393,7 +347,7 @@ Flaky tests often guess at timing with arbitrary delays. This creates race condi
 **Core principle:** Wait for the actual condition you care about, not a guess about how long it takes.
 
 **Use when:**
-- Tests have arbitrary delays (`setTimeout`, `sleep`, `time.sleep()`)
+- Tests have arbitrary delays such as setTimeout, sleep, or time.sleep.
 - Tests are flaky (pass sometimes, fail under load)
 - Tests timeout when run in parallel
 - Waiting for async operations to complete
@@ -404,71 +358,44 @@ Flaky tests often guess at timing with arbitrary delays. This creates race condi
 
 ### Core Pattern
 
-```typescript
-// ❌ BEFORE: Guessing at timing
-await new Promise(r => setTimeout(r, 50));
-const result = getResult();
-expect(result).toBeDefined();
+**Anti-pattern:** Guessing at timing by inserting an arbitrary delay, then checking the result.
 
-// ✅ AFTER: Waiting for condition
-await waitFor(() => getResult() !== undefined);
-const result = getResult();
-expect(result).toBeDefined();
-```
+**Correct pattern:** Wait for the actual condition you care about using a polling helper. Pass a function that returns the desired state, wait until it returns a truthy value, then assert the result.
 
 ### Quick Patterns
 
 | Scenario | Pattern |
 |----------|---------|
-| Wait for event | `waitFor(() => events.find(e => e.type === 'DONE'))` |
-| Wait for state | `waitFor(() => machine.state === 'ready')` |
-| Wait for count | `waitFor(() => items.length >= 5)` |
-| Wait for file | `waitFor(() => fs.existsSync(path))` |
-| Complex condition | `waitFor(() => obj.ready && obj.value > 10)` |
+| Wait for event | Poll until a matching event is found in the event list. |
+| Wait for state | Poll until the machine or object reaches the desired state. |
+| Wait for count | Poll until the collection contains at least the required number of items. |
+| Wait for file | Poll until the file exists at the expected path. |
+| Complex condition | Poll until a combination of properties all satisfy the requirement. |
 
 ### Implementation
 
 Generic polling function:
-```typescript
-async function waitFor<T>(
-  condition: () => T | undefined | null | false,
-  description: string,
-  timeoutMs = 5000
-): Promise<T> {
-  const startTime = Date.now();
 
-  while (true) {
-    const result = condition();
-    if (result) return result;
-
-    if (Date.now() - startTime > timeoutMs) {
-      throw new Error(`Timeout waiting for ${description} after ${timeoutMs}ms`);
-    }
-
-    await new Promise(r => setTimeout(r, 10)); // Poll every 10ms
-  }
-}
-```
+- Accept a condition function that returns the desired value, a description string for error messages, and a timeout in milliseconds.
+- Record the start time.
+- Loop indefinitely: invoke the condition function; if it returns a truthy value, return that value immediately.
+- If the elapsed time exceeds the timeout, throw an error that includes the description and timeout duration.
+- Otherwise, pause briefly (for example, 10 milliseconds) before polling again.
 
 ### Common Mistakes
 
-**❌ Polling too fast:** `setTimeout(check, 1)` - wastes CPU
-**✅ Fix:** Poll every 10ms
+**Polling too fast:** Calling setTimeout with a 1ms delay wastes CPU.
+**Fix:** Poll every 10ms.
 
-**❌ No timeout:** Loop forever if condition never met
-**✅ Fix:** Always include timeout with clear error
+**No timeout:** Loop forever if condition never met.
+**Fix:** Always include timeout with clear error.
 
-**❌ Stale data:** Cache state before loop
-**✅ Fix:** Call getter inside loop for fresh data
+**Stale data:** Cache state before loop.
+**Fix:** Call getter inside loop for fresh data.
 
 ### When Arbitrary Timeout IS Correct
 
-```typescript
-// Tool ticks every 100ms - need 2 ticks to verify partial output
-await waitForEvent(manager, 'TOOL_STARTED'); // First: wait for condition
-await new Promise(r => setTimeout(r, 200));   // Then: wait for timed behavior
-// 200ms = 2 ticks at 100ms intervals - documented and justified
-```
+First wait for a triggering condition (for example, an event that signals the start of a timed behavior). Then introduce a delay based on known timing, not a guess. The delay should be documented and justified (for example, two ticks of a 100ms interval requires 200ms).
 
 **Requirements:**
 1. First wait for triggering condition
