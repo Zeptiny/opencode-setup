@@ -111,5 +111,19 @@ requesting-code-review/SKILL.md
 - skills/systematic-debugging/find-polluter.sh
 - skills/systematic-debugging/CREATION-LOG.md
 
+## test-driven-development/SKILL.md
+- Consolidated into single file per OpenCode skill conventions
+- Replaced external reference to testing-anti-patterns.md with inlined section
+- Inlined 4 unique anti-patterns with gate functions:
+  1. Testing Mock Behavior (with assertion gate)
+  2. Test-Only Methods in Production (with method-addition gate)
+  3. Mocking Without Understanding (with side-effect analysis gate)
+  4. Incomplete Mocks (with completeness gate)
+- Added "When Mocks Become Too Complex" subsection
+- Removed external file reference line
+
+### Removed files
+- skills/test-driven-development/testing-anti-patterns.md
+
 ## receiving-code-review/SKILL.md
 - Changed CLAUDE.md violation → AGENTS.md violation

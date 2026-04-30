@@ -356,10 +356,59 @@ Never fix bugs without a test.
 
 ## Testing Anti-Patterns
 
-When adding mocks or test utilities, read @testing-anti-patterns.md to avoid common pitfalls:
-- Testing mock behavior instead of real behavior
-- Adding test-only methods to production classes
-- Mocking without understanding dependencies
+**Core principle:** Test what the code does, not what the mocks do.
+
+### 1. Testing Mock Behavior
+
+**Violation:** Asserting on mock elements (`expect(mockElement).toBeInTheDocument()`)
+
+**Gate function:**
+```
+BEFORE asserting on any mock element:
+  Ask: "Am I testing real component behavior or just mock existence?"
+  IF testing mock existence: STOP. Delete assertion or unmock the component.
+```
+
+### 2. Test-Only Methods in Production
+
+**Violation:** Adding `destroy()` or `reset()` methods used only in `afterEach`
+
+**Gate function:**
+```
+BEFORE adding any method to production class:
+  Ask: "Is this only used by tests?"
+  IF yes: STOP. Put it in test utilities instead.
+```
+
+### 3. Mocking Without Understanding
+
+**Violation:** Mocking a method whose side effects your test depends on
+
+**Gate function:**
+```
+BEFORE mocking any method:
+  1. Ask: "What side effects does the real method have?"
+  2. Ask: "Does this test depend on any of those side effects?"
+  IF depends on side effects: Mock at lower level. NOT the high-level method the test depends on.
+```
+
+### 4. Incomplete Mocks
+
+**Violation:** Partial mock responses missing fields downstream code uses
+
+**Gate function:**
+```
+BEFORE creating mock responses:
+  Include ALL fields the real API returns. Partial mocks fail silently.
+```
+
+### When Mocks Become Too Complex
+
+- Mock setup longer than test logic
+- Mocking everything to make test pass
+- Can't explain why mock is needed
+
+**Consider:** Integration tests with real components are often simpler than complex mocks.
 
 ## Final Rule
 
