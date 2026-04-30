@@ -291,68 +291,36 @@ Bugs often manifest deep in the call stack (git init in wrong directory, file cr
 
 ### The Tracing Process
 
-1. **Observe the Symptom**
-   ```
-   Error: git init failed in /Users/jesse/project/packages/core
-   ```
+1. **Observe the Symptom** — Error at a deep location in the stack
+2. **Find Immediate Cause** — What operation failed and with what parameters?
+3. **Ask: What Called This?** — Follow the call chain upward one level
+4. **Keep Tracing Up** — What value was passed? Is it valid here but wrong at source?
+5. **Find Original Trigger** — Where did the invalid value originate?
 
-2. **Find Immediate Cause**
-   What code directly causes this?
-   ```typescript
-   await execFileAsync('git', ['init'], { cwd: projectDir });
-   ```
-
-3. **Ask: What Called This?**
-   ```typescript
-   WorktreeManager.createSessionWorktree(projectDir, sessionId)
-     → called by Session.initializeWorkspace()
-     → called by Session.create()
-     → called by test at Project.create()
-   ```
-
-4. **Keep Tracing Up**
-   What value was passed?
-   - `projectDir = ''` (empty string!)
-   - Empty string as `cwd` resolves to `process.cwd()`
-   - That's the source code directory!
-
-5. **Find Original Trigger**
-   Where did empty string come from?
-   ```typescript
-   const context = setupCoreTest(); // Returns { tempDir: '' }
-   Project.create('name', context.tempDir); // Accessed before beforeEach!
-   ```
+**Example trace:**
+```
+Symptom:    git init failed in packages/core/
+Immediate:  git init with cwd = ''
+Called by:  WorkspaceManager.createWorkspace(projectDir)
+Value:      projectDir = '' (empty string resolves to process.cwd())
+Source:     Test accessed context.tempDir before beforeEach initialized it
+Fix:        Make tempDir a getter that throws if accessed too early
+```
 
 ### Adding Stack Traces
 
-When you can't trace manually, add instrumentation:
+When you can't trace manually, add instrumentation before the problematic operation:
 
 ```typescript
-// Before the problematic operation
-async function gitInit(directory: string) {
-  const stack = new Error().stack;
-  console.error('DEBUG git init:', {
-    directory,
-    cwd: process.cwd(),
-    nodeEnv: process.env.NODE_ENV,
-    stack,
-  });
-
-  await execFileAsync('git', ['init'], { cwd: directory });
-}
+const stack = new Error().stack;
+console.error('DEBUG:', { param, cwd: process.cwd(), stack });
 ```
 
-**Critical:** Use `console.error()` in tests (not logger - may not show)
+**Critical:** Use `console.error()` in tests (logger may be suppressed).
 
-**Run and capture:**
-```bash
-npm test 2>&1 | grep 'DEBUG git init'
-```
+**Run and capture:** `npm test 2>&1 | grep 'DEBUG:'`
 
-**Analyze stack traces:**
-- Look for test file names
-- Find the line number triggering the call
-- Identify the pattern (same test? same parameter?)
+**Analyze:** Look for test file names, line numbers, and parameter patterns.
 
 ### Finding Which Test Causes Pollution
 
@@ -399,66 +367,12 @@ Different layers catch different cases:
 
 ### The Four Layers
 
-**Layer 1: Entry Point Validation**
-Purpose: Reject obviously invalid input at API boundary
-```typescript
-function createProject(name: string, workingDirectory: string) {
-  if (!workingDirectory || workingDirectory.trim() === '') {
-    throw new Error('workingDirectory cannot be empty');
-  }
-  if (!existsSync(workingDirectory)) {
-    throw new Error(`workingDirectory does not exist: ${workingDirectory}`);
-  }
-  if (!statSync(workingDirectory).isDirectory()) {
-    throw new Error(`workingDirectory is not a directory: ${workingDirectory}`);
-  }
-  // ... proceed
-}
-```
-
-**Layer 2: Business Logic Validation**
-Purpose: Ensure data makes sense for this operation
-```typescript
-function initializeWorkspace(projectDir: string, sessionId: string) {
-  if (!projectDir) {
-    throw new Error('projectDir required for workspace initialization');
-  }
-  // ... proceed
-}
-```
-
-**Layer 3: Environment Guards**
-Purpose: Prevent dangerous operations in specific contexts
-```typescript
-async function gitInit(directory: string) {
-  // In tests, refuse git init outside temp directories
-  if (process.env.NODE_ENV === 'test') {
-    const normalized = normalize(resolve(directory));
-    const tmpDir = normalize(resolve(tmpdir()));
-
-    if (!normalized.startsWith(tmpDir)) {
-      throw new Error(
-        `Refusing git init outside temp dir during tests: ${directory}`
-      );
-    }
-  }
-  // ... proceed
-}
-```
-
-**Layer 4: Debug Instrumentation**
-Purpose: Capture context for forensics
-```typescript
-async function gitInit(directory: string) {
-  const stack = new Error().stack;
-  logger.debug('About to git init', {
-    directory,
-    cwd: process.cwd(),
-    stack,
-  });
-  // ... proceed
-}
-```
+| Layer | Purpose | Example |
+|-------|---------|---------|
+| **1. Entry Point** | Reject invalid input at API boundary | `if (!dir) throw new Error('dir required')` |
+| **2. Business Logic** | Ensure data makes sense for operation | `if (!existsSync(path)) throw new Error('path not found')` |
+| **3. Environment Guard** | Prevent dangerous ops in specific contexts | `if (isTest && !inTempDir(path)) throw new Error('unsafe')` |
+| **4. Debug Instrumentation** | Capture context for forensics | `console.error('DEBUG:', { path, cwd, stack })` |
 
 ### Applying the Pattern
 
