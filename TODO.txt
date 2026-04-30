@@ -1,0 +1,12 @@
+frontend-patterns
+python-patterns
+python-testing
+receiving-code-review
+requesting-code-reviewsubagent-driven-Development
+systematic-debugging
+test-driven-Development
+using-git-worktrees
+using-superpowers
+verification-before-completion
+writing-plans
+writing-skills

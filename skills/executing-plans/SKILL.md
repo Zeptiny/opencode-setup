@@ -11,7 +11,7 @@ Load plan, review critically, execute all tasks, report when complete.
 
 **Announce at start:** "I'm using the executing-plans skill to implement this plan."
 
-**Note:** If subagents are available (OpenCode supports this via the `task` tool), use the **subagent-driven-development** skill instead of this skill for higher quality work.
+**Note:** ICheck the **subagent-driven-development** skill and ask the user if the implementation should be based on subagents.
 
 ## The Process
 

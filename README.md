@@ -23,6 +23,7 @@ The skills were sourced from:
 ## dispatching-parallel-agents/SKILL.md
 - Changed Task("Fix...") syntax to OpenCode task(subagent_type="general", description=..., prompt=...) format
 - Replaced "In Claude Code / AI environment" comment with OpenCode-specific guidance
+- Replaced emoji-style anti-patterns (❌/✅) with labeled prose (Too broad/Specific, No context/Context, etc.) in Common Mistakes section
 
 ## subagent-driven-development/SKILL.md
 - Renamed all TodoWrite → todowrite (process flow + body text)
@@ -56,6 +57,7 @@ requesting-code-review/SKILL.md
 - Changed superpowers:finishing-a-development-branch → finishing-a-development-branch
 - Changed platform-agnostic note to OpenCode-specific text mentioning task tool
 - Removed superpowers: prefix from 3 cross-skill references
+- Changed subagent-driven-development note from "use instead" to "check and ask the user" approach
 
 ## writing-plans/SKILL.md
 - Changed docs/superpowers/plans/ → docs/plans/ (3 occurrences)
