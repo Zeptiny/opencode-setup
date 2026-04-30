@@ -81,19 +81,19 @@ requesting-code-review/SKILL.md
 
 ## brainstorming/SKILL.md
 - Changed docs/superpowers/specs/ → docs/specs/ (2 occurrences)
+- Removed all Visual Companion references (checklist, flowchart, section)
+- Added Spec Document Review section with spec-document-reviewer subagent dispatch
+- Renumbered checklist items after removing visual companion step
 
-### brainstorming/spec-document-reviewer-prompt.md
-- Changed docs/superpowers/specs/ → docs/specs/
+### agents/spec-document-reviewer.md
+- Moved from skills/brainstorming/spec-document-reviewer-prompt.md
+- Transformed from prompt template into standalone agent with proper frontmatter
+- Removed template placeholders and Task tool wrapper
 
-### brainstorming/visual-companion.md
-- Changed .superpowers/brainstorm/ → .opencode/brainstorm/ (3 occurrences)
-- Updated .gitignore recommendation from .superpowers/ to .opencode/
-
-### brainstorming/scripts/start-server.sh
-- Changed .superpowers/brainstorm/ → .opencode/brainstorm/ (2 occurrences)
-
-### brainstorming/scripts/stop-server.sh
-- Changed .superpowers/ → .opencode/
+### Removed files
+- skills/brainstorming/visual-companion.md
+- skills/brainstorming/scripts/start-server.sh
+- skills/brainstorming/scripts/stop-server.sh
 
 ## systematic-debugging/SKILL.md
 - Changed superpowers:test-driven-development → test-driven-development (2 occurrences)
