@@ -33,33 +33,21 @@ You MUST create a task for each of these items and complete them in order:
 
 ## Process Flow
 
-```dot
-digraph brainstorming {
-    "Explore project context" [shape=box];
-    "Ask clarifying questions" [shape=box];
-    "Propose 2-3 approaches" [shape=box];
-    "Present design sections" [shape=box];
-    "User approves design?" [shape=diamond];
-    "Write design doc" [shape=box];
-    "Spec self-review\n(fix inline)" [shape=box];
-    "Spec document review?" [shape=diamond];
-    "User reviews spec?" [shape=diamond];
-    "Invoke writing-plans skill" [shape=doublecircle];
-
-    "Explore project context" -> "Ask clarifying questions";
-    "Ask clarifying questions" -> "Propose 2-3 approaches";
-    "Propose 2-3 approaches" -> "Present design sections";
-    "Present design sections" -> "User approves design?";
-    "User approves design?" -> "Present design sections" [label="no, revise"];
-    "User approves design?" -> "Write design doc" [label="yes"];
-    "Write design doc" -> "Spec self-review\n(fix inline)";
-    "Spec self-review\n(fix inline)" -> "Spec document review?";
-    "Spec document review?" -> "User reviews spec?" [label="no / done"];
-    "Spec document review?" -> "Spec self-review\n(fix inline)" [label="issues found"];
-    "User reviews spec?" -> "Write design doc" [label="changes requested"];
-    "User reviews spec?" -> "Invoke writing-plans skill" [label="approved"];
-}
-```
+1. **Explore project context**
+2. **Ask clarifying questions**
+3. **Propose 2-3 approaches**
+4. **Present design sections**
+5. **User approves design?**
+   - *No* → Go back to **Present design sections** *(revise)*
+   - *Yes* → **Write design doc**
+6. **Write design doc**
+7. **Spec self-review** *(fix inline)*
+8. **Spec document review?**
+   - *Issues found* → Go back to **Spec self-review** *(fix inline)*
+   - *No / done* → **User reviews spec?**
+9. **User reviews spec?**
+   - *Changes requested* → Go back to **Write design doc**
+   - *Approved* → **Invoke writing-plans skill** *(terminal state)*
 
 **The terminal state is invoking writing-plans.** Do NOT invoke frontend-design, mcp-builder, or any other implementation skill. The ONLY skill you invoke after brainstorming is writing-plans.
 
