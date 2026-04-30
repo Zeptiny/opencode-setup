@@ -16,8 +16,8 @@ The skills were sourced from:
 - Replaced multi-platform instructions (Claude Code, Copilot CLI, Gemini CLI, Codex) with single OpenCode section referencing skill tool (skill({ name: "skill-name" }))
 - Removed non-existent references/copilot-tools.md and references/codex-tools.md references
 - Kept CLAUDE.md and GEMINI.md in instruction priority (they still need to be read if present)
-- Renamed TodoWrite → todowrite in flowchart nodes and text
-- Renamed Skill → skill in flowchart nodes and description
+- Renamed TodoWrite → todowrite in process flow nodes and text
+- Renamed Skill → skill in process flow nodes and description
 - Added AGENTS.md to instruction priority list
 
 ## dispatching-parallel-agents/SKILL.md
@@ -25,11 +25,11 @@ The skills were sourced from:
 - Replaced "In Claude Code / AI environment" comment with OpenCode-specific guidance
 
 ## subagent-driven-development/SKILL.md
-- Renamed all TodoWrite → todowrite (flowchart + body text)
+- Renamed all TodoWrite → todowrite (process flow + body text)
 - Changed docs/superpowers/plans/ → docs/plans/
 - Changed ~/.config/superpowers/hooks/ → ~/.config/opencode/hooks/
 - Removed all superpowers: prefixes from cross-skill references (6 entries in Integration section)
-- Changed superpowers:finishing-a-development-branch → finishing-a-development-branch in flowchart
+- Changed superpowers:finishing-a-development-branch → finishing-a-development-branch in process flow
 
 ### agents/implementer.md
 - Moved from skills/subagent-driven-development/implementer-prompt.md
