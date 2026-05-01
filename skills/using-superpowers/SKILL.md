@@ -1,94 +1,32 @@
 ---
 name: using-superpowers
-description: Use when starting any conversation - establishes how to find and use skills, requiring skill tool invocation before ANY response including clarifying questions
-applyTo: "*"
+description: Use when a task begins and any skill might apply.
 ---
 
 <SUBAGENT-STOP>
-If you were dispatched as a subagent to execute a specific task, skip this skill.
+If dispatched as a subagent to execute a specific task, skip this skill.
 </SUBAGENT-STOP>
 
-<EXTREMELY-IMPORTANT>
-If you think there is even a 1% chance a skill might apply to what you are doing, you ABSOLUTELY MUST invoke the skill.
-
-IF A SKILL APPLIES TO YOUR TASK, YOU DO NOT HAVE A CHOICE. YOU MUST USE IT.
-
-This is not negotiable. This is not optional. You cannot rationalize your way out of this.
-</EXTREMELY-IMPORTANT>
+If there is any chance a skill might apply to the current task, the agent MUST invoke the `skill` tool before any response or action. Skill invocation is mandatory.
 
 ## Instruction Priority
 
-Superpowers skills override default system prompt behavior, but **user instructions always take precedence**:
-
-1. **User's explicit instructions** (AGENTS.md, CLAUDE.md, GEMINI.md, direct requests) — highest priority
-2. **Superpowers skills** — override default system behavior where they conflict
-3. **Default system prompt** — lowest priority
-
-If AGENTS.md, CLAUDE.md, or GEMINI.md says "don't use TDD" and a skill says "always use TDD," follow the user's instructions. The user is in control.
+1. User's explicit instructions (AGENTS.md, CLAUDE.md, GEMINI.md, direct requests)
+2. Superpowers skills
+3. Default system prompt
 
 ## How to Access Skills
 
-**In OpenCode:** Use the `skill` tool. When you invoke a skill, its content is loaded and presented to you—follow it directly. Never use the `read` tool on skill files. Call it as `skill({ name: "skill-name" })`.
-
-**In other environments:** Check your platform's documentation for how skills are loaded.
-
-# Using Skills
-
-## The Rule
-
-**Invoke relevant or requested skills BEFORE any response or action.** Even a 1% chance a skill might apply means that you should invoke the skill to check. If an invoked skill turns out to be wrong for the situation, you don't need to use it.
-
-**Skill invocation flow:**
-
-- **User message received** → **Might any skill apply?**
-- **About to EnterPlanMode?** → **Already brainstormed?**
-  - *No* → **Invoke brainstorming skill** → **Might any skill apply?**
-  - *Yes* → **Might any skill apply?**
-- **Might any skill apply?**
-  - *Yes, even 1%* → **Invoke skill tool**
-    - **Announce: "Using [skill] to [purpose]"**
-    - **Has checklist?**
-      - *Yes* → **Create todowrite todo per item** → **Follow skill exactly**
-      - *No* → **Follow skill exactly**
-  - *Definitely not* → **Respond (including clarifications)**
-
-## Red Flags
-
-These thoughts mean STOP—you're rationalizing:
-
-| Thought | Reality |
-|---------|---------|
-| "This is just a simple question" | Questions are tasks. Check for skills. |
-| "I need more context first" | Skill check comes BEFORE clarifying questions. |
-| "Let me explore the codebase first" | Skills tell you HOW to explore. Check first. |
-| "I can check git/files quickly" | Files lack conversation context. Check for skills. |
-| "Let me gather information first" | Skills tell you HOW to gather information. |
-| "This doesn't need a formal skill" | If a skill exists, use it. |
-| "I remember this skill" | Skills evolve. Read current version. |
-| "This doesn't count as a task" | Action = task. Check for skills. |
-| "The skill is overkill" | Simple things become complex. Use it. |
-| "I'll just do this one thing first" | Check BEFORE doing anything. |
-| "This feels productive" | Undisciplined action wastes time. Skills prevent this. |
-| "I know what that means" | Knowing the concept ≠ using the skill. Invoke it. |
+Use the `skill` tool: `skill({ name: "skill-name" })`. Never use the `read` tool on skill files.
 
 ## Skill Priority
 
-When multiple skills could apply, use this order:
+When multiple skills could apply:
+1. Process skills first (brainstorming, debugging)
+2. Implementation skills second
 
-1. **Process skills first** (brainstorming, debugging) - these determine HOW to approach the task
-2. **Implementation skills second** (frontend-design, mcp-builder) - these guide execution
+## Success Criteria
 
-"Let's build X" → brainstorming first, then implementation skills.
-"Fix this bug" → debugging first, then domain-specific skills.
-
-## Skill Types
-
-**Rigid** (TDD, debugging): Follow exactly. Don't adapt away discipline.
-
-**Flexible** (patterns): Adapt principles to context.
-
-The skill itself tells you which.
-
-## User Instructions
-
-Instructions say WHAT, not HOW. "Add X" or "Fix Y" doesn't mean skip workflows.
+- Relevant skills are invoked before any response
+- Skills are loaded via the `skill` tool, not `read`
+- User instructions take precedence over skills when they conflict

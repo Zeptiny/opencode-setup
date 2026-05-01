@@ -5,7 +5,7 @@ description: Use when completing tasks, implementing major features, or before m
 
 # Requesting Code Review
 
-Dispatch code-reviewer subagent to catch issues before they cascade. The reviewer gets precisely crafted context for evaluation — never your session's history. This keeps the reviewer focused on the work product, not your thought process, and preserves your own context for continued work.
+Dispatch code-reviewer subagent to catch issues before they cascade. The reviewer gets precisely crafted context for evaluation — never the session history. This keeps the reviewer focused on the work product, not the thought process, and preserves the agent's own context for continued work.
 
 **Core principle:** Review early, review often.
 
@@ -24,9 +24,15 @@ Dispatch code-reviewer subagent to catch issues before they cascade. The reviewe
 ## How to Request
 
 **1. Get git SHAs:**
+
 ```bash
-BASE_SHA=$(git rev-parse HEAD~1)  # or origin/main
-HEAD_SHA=$(git rev-parse HEAD)
+if [ -d .git ]; then
+    BASE_SHA=$(git rev-parse --verify HEAD~1) || BASE_SHA=$(git rev-parse --verify origin/main)
+    HEAD_SHA=$(git rev-parse --verify HEAD)
+else
+    echo "Error: not a git repository" >&2
+    exit 1
+fi
 ```
 
 **2. Dispatch code-reviewer subagent:**
@@ -35,10 +41,10 @@ Use the `task` tool (subagent_type: code-reviewer) with the following base templ
 
 ```markdown
 ## What Was Implemented
-<What you just built>
+<Summary of what was built>
 
 ## Requirements/Plan
-<What it should do>
+<What the change should do>
 
 ## Git Range to Review
 **Base:** <Starting commit SHA>
@@ -56,36 +62,33 @@ Use the `task` tool (subagent_type: code-reviewer) with the following base templ
 
 ## Example
 
+After completing a task that adds verification functions:
+
+```bash
+if [ -d .git ]; then
+    BASE_SHA=$(git log --oneline | grep "Task 1" | head -1 | awk '{print $1}')
+    HEAD_SHA=$(git rev-parse --verify HEAD)
+fi
 ```
-[Just completed Task 2: Add verification function]
 
-You: Let me request code review before proceeding.
+Then dispatch a code-reviewer subagent via the `task` tool with:
+- **WHAT_WAS_IMPLEMENTED:** Verification and repair functions for conversation index
+- **PLAN_OR_REQUIREMENTS:** Task 2 from docs/plans/deployment-plan.md
+- **BASE_SHA:** a7981ec
+- **HEAD_SHA:** 3df7661
+- **DESCRIPTION:** Added verifyIndex() and repairIndex() with 4 issue types
 
-BASE_SHA=$(git log --oneline | grep "Task 1" | head -1 | awk '{print $1}')
-HEAD_SHA=$(git rev-parse HEAD)
+Typical response:
+- **Strengths:** Clean architecture, real tests
+- **Issues:** Important: Missing progress indicators; Minor: Magic number for reporting interval
+- **Assessment:** Ready to proceed
 
-[Dispatch code-reviewer subagent]
-  WHAT_WAS_IMPLEMENTED: Verification and repair functions for conversation index
-  PLAN_OR_REQUIREMENTS: Task 2 from docs/plans/deployment-plan.md
-  BASE_SHA: a7981ec
-  HEAD_SHA: 3df7661
-  DESCRIPTION: Added verifyIndex() and repairIndex() with 4 issue types
-
-[Subagent returns]:
-  Strengths: Clean architecture, real tests
-  Issues:
-    Important: Missing progress indicators
-    Minor: Magic number (100) for reporting interval
-  Assessment: Ready to proceed
-
-You: [Fix progress indicators]
-[Continue to Task 3]
-```
+Fix any reported issues before continuing to the next task.
 
 ## Integration with Workflows
 
 **Subagent-Driven Development:**
-- Review after EACH task
+- Review after each task
 - Catch issues before they compound
 - Fix before moving to next task
 
@@ -109,3 +112,11 @@ You: [Fix progress indicators]
 - Push back with technical reasoning
 - Show code/tests that prove it works
 - Request clarification
+
+## Success Criteria
+
+A code review request is successful when:
+- The subagent receives a clean git range with valid SHAs
+- Feedback is categorized as Critical, Important, or Minor
+- All Critical and Important issues are addressed before proceeding
+- The reviewer was given context without session history

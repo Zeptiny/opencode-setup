@@ -1,6 +1,6 @@
 ---
 name: receiving-code-review
-description: Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative agreement or blind implementation
+description: Use when receiving code review feedback, before implementing suggestions, especially when feedback seems unclear or technically questionable
 ---
 
 # Code Review Reception
@@ -17,7 +17,7 @@ Code review requires technical evaluation, not emotional performance.
 WHEN receiving code review feedback:
 
 1. READ: Complete feedback without reacting
-2. UNDERSTAND: Restate requirement in own words (or ask)
+2. UNDERSTAND: Paraphrase the requirement (or ask for clarification)
 3. VERIFY: Check against codebase reality
 4. EVALUATE: Technically sound for THIS codebase?
 5. RESPOND: Technical acknowledgment or reasoned pushback
@@ -31,13 +31,13 @@ IF any item is unclear:
   STOP - do not implement anything yet
   ASK for clarification on unclear items
 
-WHY: Items may be related. Partial understanding = wrong implementation.
+WHY: Items may be related. Partial understanding leads to wrong implementation.
 ```
 
 **Example:**
 ```
-your human partner: "Fix 1-6"
-You understand 1,2,3,6. Unclear on 4,5.
+human partner: "Fix 1-6"
+Agent understands 1,2,3,6. Unclear on 4,5.
 
 WRONG: Implement 1,2,3,6 now, ask about 4,5 later
 RIGHT: "I understand items 1,2,3,6. Need clarification on 4 and 5 before proceeding."
@@ -45,7 +45,7 @@ RIGHT: "I understand items 1,2,3,6. Need clarification on 4 and 5 before proceed
 
 ## Source-Specific Handling
 
-### From your human partner
+### From the human partner
 - **Trusted** - implement after understanding
 - **Still ask** if scope unclear
 - **No performative agreement**
@@ -66,8 +66,8 @@ IF suggestion seems wrong:
 IF can't easily verify:
   Say so: "I can't verify this without [X]. Should I [investigate/ask/proceed]?"
 
-IF conflicts with your human partner's prior decisions:
-  Stop and discuss with your human partner first
+IF conflicts with the human partner's prior decisions:
+  Stop and discuss with the human partner first
 ```
 
 ## When To Push Back
@@ -78,9 +78,17 @@ Push back when:
 - Violates YAGNI (unused feature)
 - Technically incorrect for this stack
 - Legacy/compatibility reasons exist
-- Conflicts with your human partner's architectural decisions
+- Conflicts with the human partner's architectural decisions
 
 **How to push back:**
 - Use technical reasoning, not defensiveness
 - Ask specific questions
 - Reference working tests/code
+
+## Success Criteria
+
+- All feedback items are understood before any implementation begins
+- Unclear items are clarified, never partially implemented
+- Each change is implemented individually and verified with tests
+- Pushback includes specific technical reasoning and references to code or tests
+- The human partner's prior architectural decisions are preserved over conflicting external suggestions
