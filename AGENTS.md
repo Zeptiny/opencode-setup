@@ -1,11 +1,3 @@
----
-name: using-superpowers
-description: Use when a task begins and any skill might apply.
----
-
-<SUBAGENT-STOP>
-If dispatched as a subagent to execute a specific task, skip this skill.
-</SUBAGENT-STOP>
 
 If there is any chance a skill might apply to the current task, the agent MUST invoke the `skill` tool before any response or action. Skill invocation is mandatory.
 
