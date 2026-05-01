@@ -1,5 +1,16 @@
 My personal Opencode configuration and skills.
 
+# LSPs
+## Pyright
+```bash
+npm install -g pyright
+```
+
+## Ruff
+```python
+pip install ruff
+```
+
 # Agents
 
 Preconfigured subagents in `agents/`:

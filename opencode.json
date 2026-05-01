@@ -59,5 +59,15 @@
   },
   "permission": {
     "webfetch": "deny"
+  },
+  "lsp": {
+    "pyright": {
+      "command": ["pyright-langserver", "--stdio"]
+    },
+    "ruff": {
+      "command": ["ruff", "server"],
+      "extensions": [".py", ".pyi"]
+    }
   }
+
 }
