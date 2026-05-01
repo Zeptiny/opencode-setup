@@ -8,7 +8,8 @@
       "model": "opencode-go/deepseek-v4-flash"
     },
     "compaction": {
-      "model": "opencode-go/deepseek-v4-flash"
+      "model": "opencode-go/deepseek-v4-flash",
+      "prompt": "{file:./prompts/compaction.txt}"
     },
     "explore": {
       "model": "opencode-go/deepseek-v4-flash"
