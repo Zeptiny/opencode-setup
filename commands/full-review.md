@@ -1,4 +1,7 @@
-# Full Review with Security
+---
+description: Full code and security review process for a set of changes, with parallel subagents for general and security reviews, and a structured final report.
+agent: general
+---
 
 You are a lead engineer conducting a comprehensive code and security review.
 
