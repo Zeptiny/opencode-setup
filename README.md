@@ -1,5 +1,33 @@
 My personal Opencode configuration and skills.
 
+# Agents
+
+Preconfigured subagents in `agents/`:
+
+| Agent | Purpose |
+|-------|---------|
+| `code-reviewer` | General code review — bugs, architecture, testing, production readiness |
+| `code-quality-reviewer` | Code quality review (use after spec compliance is confirmed) |
+| `security-reviewer` | **Deep security audit** — injection, auth, crypto, RCE, data exposure with strict false-positive filtering |
+| `spec-reviewer` | Verify implementation matches specification exactly |
+| `spec-document-reviewer` | Review design specs for completeness and consistency |
+| `plan-reviewer` | Review implementation plans for completeness and buildability |
+| `implementer` | Implement specific tasks from a plan |
+
+# Commands
+
+Custom command templates in `commands/`:
+
+| Command | Description |
+|---------|-------------|
+| `full-review` | Orchestrates **parallel** general code review + deep security review, then synthesizes a unified report |
+
+To use `full-review`, invoke it in OpenCode (e.g., `/full-review` or `/full-review main` depending on your OpenCode command registration). It will:
+1. Gather diff context and full file contents
+2. Dispatch `code-reviewer` and `security-reviewer` subagents in parallel
+3. Merge and deduplicate findings (security framing takes priority on overlaps)
+4. Output a unified markdown report
+
 # Sources
 The skills were sourced from:
 - https://github.com/obra/superpowers
