@@ -148,3 +148,29 @@ requesting-code-review/SKILL.md
 
 ## receiving-code-review/SKILL.md
 - Changed CLAUDE.md violation → AGENTS.md violation
+- Removed Forbidden Responses section
+- Removed YAGNI Check for "Professional" Features section
+- Removed Implementation Order section
+- Removed Acknowledging Correct Feedback section
+- Removed Gracefully Correcting Your Pushback section
+- Removed Common Mistakes table section
+- Removed Real Examples section
+- Removed GitHub Thread Replies section
+- Removed The Bottom Line section
+- Replaced emoji anti-patterns (❌/✅) with WRONG/RIGHT labels in Handling Unclear Feedback section
+- Trimmed When To Push Back section
+
+## python-patterns/SKILL.md
+- Removed `applyTo: "*.py"` from frontmatter
+
+## python-testing/SKILL.md
+- Removed `applyTo: "*.py"` from frontmatter
+
+## subagent-driven-development/SKILL.md
+- Removed emoji checkmarks (✅/❌) from review examples, replaced with plain text
+
+## writing-plans/SKILL.md
+- Removed user preference override note for plan location default
+
+## using-git-worktrees/SKILL.md
+- Deleted entire skill file

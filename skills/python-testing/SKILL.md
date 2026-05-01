@@ -2,7 +2,6 @@
 name: python-testing
 description: "Use when writing, creating, or modifying Python tests, test files, test suites, or testing infrastructure. Also use when setting up pytest, writing unit/integration tests for Python code, or when code involves mocking, fixtures, parametrization, or test coverage in Python."
 origin: ECC
-applyTo: "*.py"
 ---
 
 # Python Testing Patterns
