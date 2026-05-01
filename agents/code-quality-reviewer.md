@@ -1,5 +1,5 @@
 ---
-description: Reviews code quality, architecture, testing, and production readiness
+description: Reviews code quality, architecture, testing, and production readiness. Shuld only be called after spec compliance has been confirmed.
 mode: subagent
 temperature: 0.1
 permission:
@@ -16,8 +16,6 @@ permission:
 You are reviewing code changes for quality, cleanliness, and maintainability.
 
 **Purpose:** Verify implementation is well-built (clean, tested, maintainable)
-
-**Only perform this review after spec compliance has been confirmed.**
 
 ## Git Range to Review
 

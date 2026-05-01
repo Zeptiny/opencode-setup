@@ -16,20 +16,21 @@ The skills were sourced from:
 - Replaced multi-platform instructions (Claude Code, Copilot CLI, Gemini CLI, Codex) with single OpenCode section referencing skill tool (skill({ name: "skill-name" }))
 - Removed non-existent references/copilot-tools.md and references/codex-tools.md references
 - Kept CLAUDE.md and GEMINI.md in instruction priority (they still need to be read if present)
-- Renamed TodoWrite → todowrite in flowchart nodes and text
-- Renamed Skill → skill in flowchart nodes and description
+- Renamed TodoWrite → todowrite in process flow nodes and text
+- Renamed Skill → skill in process flow nodes and description
 - Added AGENTS.md to instruction priority list
 
 ## dispatching-parallel-agents/SKILL.md
 - Changed Task("Fix...") syntax to OpenCode task(subagent_type="general", description=..., prompt=...) format
 - Replaced "In Claude Code / AI environment" comment with OpenCode-specific guidance
+- Replaced emoji-style anti-patterns (❌/✅) with labeled prose (Too broad/Specific, No context/Context, etc.) in Common Mistakes section
 
 ## subagent-driven-development/SKILL.md
-- Renamed all TodoWrite → todowrite (flowchart + body text)
+- Renamed all TodoWrite → todowrite (process flow + body text)
 - Changed docs/superpowers/plans/ → docs/plans/
 - Changed ~/.config/superpowers/hooks/ → ~/.config/opencode/hooks/
 - Removed all superpowers: prefixes from cross-skill references (6 entries in Integration section)
-- Changed superpowers:finishing-a-development-branch → finishing-a-development-branch in flowchart
+- Changed superpowers:finishing-a-development-branch → finishing-a-development-branch in process flow
 
 ### agents/implementer.md
 - Moved from skills/subagent-driven-development/implementer-prompt.md
@@ -56,6 +57,7 @@ requesting-code-review/SKILL.md
 - Changed superpowers:finishing-a-development-branch → finishing-a-development-branch
 - Changed platform-agnostic note to OpenCode-specific text mentioning task tool
 - Removed superpowers: prefix from 3 cross-skill references
+- Changed subagent-driven-development note from "use instead" to "check and ask the user" approach
 
 ## writing-plans/SKILL.md
 - Changed docs/superpowers/plans/ → docs/plans/ (3 occurrences)
@@ -105,6 +107,10 @@ requesting-code-review/SKILL.md
 - Replaced external file references with internal section links
 - Changed superpowers:test-driven-development → test-driven-development (2 occurrences)
 - Changed superpowers:verification-before-completion → verification-before-completion
+- Removed language-specific code examples (bash, TypeScript) and replaced them with language-agnostic conceptual descriptions
+- Replaced concrete implementation snippets (waitFor polling, stack trace capture, multi-layer diagnostics) with prose algorithm descriptions
+- Changed Defense in Depth table examples from code snippets to descriptive explanations
+- Replaced emoji-style anti-patterns (❌/✅) with labeled prose (Anti-pattern/Fix) in Condition-Based Waiting section
 
 ### Removed files
 - skills/systematic-debugging/root-cause-tracing.md
@@ -142,3 +148,29 @@ requesting-code-review/SKILL.md
 
 ## receiving-code-review/SKILL.md
 - Changed CLAUDE.md violation → AGENTS.md violation
+- Removed Forbidden Responses section
+- Removed YAGNI Check for "Professional" Features section
+- Removed Implementation Order section
+- Removed Acknowledging Correct Feedback section
+- Removed Gracefully Correcting Your Pushback section
+- Removed Common Mistakes table section
+- Removed Real Examples section
+- Removed GitHub Thread Replies section
+- Removed The Bottom Line section
+- Replaced emoji anti-patterns (❌/✅) with WRONG/RIGHT labels in Handling Unclear Feedback section
+- Trimmed When To Push Back section
+
+## python-patterns/SKILL.md
+- Removed `applyTo: "*.py"` from frontmatter
+
+## python-testing/SKILL.md
+- Removed `applyTo: "*.py"` from frontmatter
+
+## subagent-driven-development/SKILL.md
+- Removed emoji checkmarks (✅/❌) from review examples, replaced with plain text
+
+## writing-plans/SKILL.md
+- Removed user preference override note for plan location default
+
+## using-git-worktrees/SKILL.md
+- Deleted entire skill file

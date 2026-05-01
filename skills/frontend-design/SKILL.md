@@ -1,145 +1,52 @@
 ---
 name: frontend-design
 description: "Use when building web components, pages, applications, or user interfaces where visual design, UI/UX, styling, layout, typography, colors, or aesthetics matter. Also use when the user asks to make something look good, professional, polished, modern, or distinctive, or when frontend work requires design decisions beyond just making it functional."
-origin: ECC
 ---
 
 # Frontend Design
 
-Use this when the task is not just "make it work" but "make it look designed."
-
-This skill is for product pages, dashboards, app shells, components, or visual systems that need a clear point of view instead of generic AI-looking UI.
+This skill applies when the task is "make it look designed," not merely "make it work." It covers product pages, dashboards, app shells, components, or visual systems needing a clear point of view.
 
 ## When To Use
 
-- building a landing page, dashboard, or app surface from scratch
-- upgrading a bland interface into something intentional and memorable
-- translating a product concept into a concrete visual direction
-- implementing a frontend where typography, composition, and motion matter
+This skill applies to landing pages, dashboards, or app surfaces built from scratch; bland interfaces needing upgrades; product concepts requiring a concrete visual direction; or frontends where typography, composition, and motion matter.
 
 ## Core Principle
 
-Pick a direction and commit to it.
-
-Safe-average UI is usually worse than a strong, coherent aesthetic with a few bold choices.
+The assistant picks a direction and commits to it. Safe-average UI is worse than a strong, coherent aesthetic with bold choices.
 
 ## Design Workflow
 
-### 1. Frame the interface first
+**Framing.** Before coding, the assistant settles purpose, audience, tone, visual direction, and one memorable takeaway. Directions include minimal, editorial, industrial, luxury, playful, geometric, retro-futurist, soft/organic, or maximalist. The assistant must not mix directions casually.
 
-Before coding, settle:
+**Visual system.** The assistant defines type hierarchy, color variables, spacing rhythm, layout logic, motion rules, and surface treatment, using CSS variables or the project's token system to keep the interface coherent.
 
-- purpose
-- audience
-- emotional tone
-- visual direction
-- one thing the user should remember
+**Composition.** The assistant prefers asymmetry for sharper hierarchy, overlap for depth, and strong whitespace for focus, using dense layouts only when beneficial and avoiding default symmetrical card grids unless clearly appropriate.
 
-Possible directions:
-
-- brutally minimal
-- editorial
-- industrial
-- luxury
-- playful
-- geometric
-- retro-futurist
-- soft and organic
-- maximalist
-
-Do not mix directions casually. Choose one and execute it cleanly.
-
-### 2. Build the visual system
-
-Define:
-
-- type hierarchy
-- color variables
-- spacing rhythm
-- layout logic
-- motion rules
-- surface / border / shadow treatment
-
-Use CSS variables or the project's token system so the interface stays coherent as it grows.
-
-### 3. Compose with intention
-
-Prefer:
-
-- asymmetry when it sharpens hierarchy
-- overlap when it creates depth
-- strong whitespace when it clarifies focus
-- dense layouts only when the product benefits from density
-
-Avoid defaulting to a symmetrical card grid unless it is clearly the right fit.
-
-### 4. Make motion meaningful
-
-Use animation to:
-
-- reveal hierarchy
-- stage information
-- reinforce user action
-- create one or two memorable moments
-
-Do not scatter generic micro-interactions everywhere. One well-directed load sequence is usually stronger than twenty random hover effects.
+**Motion.** The assistant uses animation to reveal hierarchy, stage information, reinforce action, and create memorable moments, avoiding scattered generic micro-interactions; one well-directed load sequence outweighs twenty random hover effects.
 
 ## Strong Defaults
 
-### Typography
+**Typography.** The assistant selects fonts with character, pairs a distinctive display face with a readable body face when appropriate, and avoids generic defaults on design-led pages.
 
-- pick fonts with character
-- pair a distinctive display face with a readable body face when appropriate
-- avoid generic defaults when the page is design-led
+**Color.** The assistant commits to a clear palette with one dominant field and selective accents, avoiding evenly weighted rainbow palettes or cliché gradients unless genuinely called for.
 
-### Color
+**Background.** The assistant uses atmosphere—gradients, meshes, textures, noise, patterns, or layered transparency—rather than flat empty backgrounds on product-facing pages.
 
-- commit to a clear palette
-- one dominant field with selective accents usually works better than evenly weighted rainbow palettes
-- avoid cliché purple-gradient-on-white unless the product genuinely calls for it
-
-### Background
-
-Use atmosphere:
-
-- gradients
-- meshes
-- textures
-- subtle noise
-- patterns
-- layered transparency
-
-Flat empty backgrounds are rarely the best answer for a product-facing page.
-
-### Layout
-
-- break the grid when the composition benefits from it
-- use diagonals, offsets, and grouping intentionally
-- keep reading flow obvious even when the layout is unconventional
+**Layout.** The assistant breaks the grid when the composition benefits, using diagonals, offsets, and grouping intentionally while preserving reading flow.
 
 ## Anti-Patterns
 
-Never default to:
-
-- interchangeable SaaS hero sections
-- generic card piles with no hierarchy
-- random accent colors without a system
-- placeholder-feeling typography
-- motion that exists only because animation was easy to add
+The assistant never defaults to interchangeable SaaS hero sections, generic card piles, random accent colors, placeholder typography, or motion added only because it was easy.
 
 ## Execution Rules
 
-- preserve the established design system when working inside an existing product
-- match technical complexity to the visual idea
-- keep accessibility and responsiveness intact
-- frontends should feel deliberate on desktop and mobile
+The assistant preserves the existing design system, matches technical complexity to the visual idea, and keeps accessibility and responsiveness intact.
 
 ## Quality Gate
 
-Before delivering:
+Before delivering, the assistant verifies the interface has a clear visual point of view, intentional typography and spacing, color and motion that support the product, no generic AI UI feel, and production-grade implementation.
 
-- the interface has a clear visual point of view
-- typography and spacing feel intentional
-- color and motion support the product instead of decorating it randomly
-- the result does not read like generic AI UI
-- the implementation is production-grade, not just visually interesting
+## Success Criteria
+
+The assistant succeeds when the frontend shows a cohesive visual direction, uses a consistent design system, applies typography and color with intent, incorporates purposeful motion, maintains accessibility and responsiveness, and is recognized as polished and distinctive.
