@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: Create new skills, edit or optimize existing skills, run evals, benchmark performance, or optimize descriptions. Use when working with SKILL.md files, skill directories, skill testing, or description tuning.
+description: "Use when creating, editing, or optimizing skills. Examples: create a skill, edit skill, optimize skill, SKILL.md, skill description, skill testing, benchmark skills."
 ---
 
 # Skill Creator

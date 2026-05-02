@@ -1,10 +1,6 @@
 ---
 name: frontend-patterns
-description: "Use when building or modifying React components, Next.js pages, client-side TypeScript, or browser UI logic. Triggers on component composition, hook design, state management, form handling, performance optimization, or accessibility implementation."
-license: Apache-2.0
-compatibility: opencode>=1.0
-metadata:
-  tags: [react, frontend, typescript, nextjs]
+description: "Use when building React components, Next.js pages, or frontend TypeScript. Examples: React, Next.js, component, hook, useState, useEffect, JSX, frontend, browser, UI logic."
 ---
 
 # Frontend Patterns

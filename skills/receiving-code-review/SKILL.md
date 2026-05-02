@@ -1,6 +1,6 @@
 ---
 name: receiving-code-review
-description: Use when receiving code review feedback, before implementing suggestions, especially when feedback seems unclear or technically questionable
+description: "Use when receiving code review feedback, reviewer comments, or PR suggestions. Examples: reviewer says, feedback, PR comments, review suggestions, pushback, disagree with reviewer."
 ---
 
 # Code Review Reception

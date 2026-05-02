@@ -1,6 +1,6 @@
 ---
 name: dispatching-parallel-agents
-description: Dispatch parallel subagents via task tool for independent failures. Use when 2+ unrelated problems have no shared state or sequential dependencies.
+description: "Use when 2+ independent bugs or problems need fixing in parallel. Examples: multiple issues, fix these bugs, parallel problems, independent failures, unrelated errors."
 ---
 
 # Dispatching Parallel Agents

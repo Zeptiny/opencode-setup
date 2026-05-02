@@ -1,6 +1,6 @@
 ---
 name: python-patterns
-description: "Guides the agent when writing, reviewing, or refactoring Python code. Triggers on Python syntax, type hints, error handling, async operations, data structures, package design, and tooling choices."
+description: "Use when writing, reviewing, or refactoring Python code. Examples: Python, .py, type hints, async, decorators, dataclasses, pip, virtualenv, pytest."
 ---
 
 # Python Patterns

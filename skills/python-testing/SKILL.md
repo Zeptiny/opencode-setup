@@ -1,6 +1,6 @@
 ---
 name: python-testing
-description: "Triggers when writing, creating, or modifying Python tests, test files, test suites, or testing infrastructure. Also triggers when setting up pytest, writing unit or integration tests for Python code, or when code involves mocking, fixtures, parametrization, or test coverage."
+description: "Use when writing Python tests or setting up test infrastructure. Examples: pytest, unittest, Python test, fixtures, mocking, parametrize, test coverage, conftest."
 ---
 
 # Python Testing

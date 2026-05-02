@@ -1,6 +1,6 @@
 ---
 name: systematic-debugging
-description: Trigger when encountering bugs, test failures, unexpected behavior, or performance issues. Enforces root-cause investigation before fixes.
+description: "Use when encountering bugs, errors, test failures, unexpected behavior, broken features, or performance issues. Examples: bug, error, failing, broken, not working, unexpected, crash, exception."
 ---
 
 # Systematic Debugging

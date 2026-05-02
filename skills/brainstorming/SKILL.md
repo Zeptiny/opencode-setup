@@ -1,6 +1,6 @@
 ---
 name: brainstorming
-description: "Use when creating features, components, functionality, or modifying behavior. Triggers before implementation to explore requirements and design."
+description: "Use when creating features, components, functionality, or modifying behavior. Call before implementation to explore requirements and design."
 ---
 
 # Brainstorming Ideas Into Designs

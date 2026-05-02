@@ -1,6 +1,6 @@
 ---
 name: frontend-design
-description: "Use when building web components, pages, applications, or user interfaces where visual design, UI/UX, styling, layout, typography, colors, or aesthetics matter. Also use when the user asks to make something look good, professional, polished, modern, or distinctive, or when frontend work requires design decisions beyond just making it functional."
+description: "Use when visual design, UI/UX, styling, or aesthetics matter. Examples: make it look good, design, style, polish, UI, UX, layout, typography, colors, modern, professional, distinctive."
 ---
 
 # Frontend Design

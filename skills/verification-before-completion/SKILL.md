@@ -1,6 +1,6 @@
 ---
 name: verification-before-completion
-description: Use when about to claim work is complete, fixed, or passing, before committing or creating PRs.
+description: "Use before claiming work is complete, before committing, before creating PRs, or before saying 'done'. Examples: completion claims, success statements, commit requests, PR creation, task completion."
 ---
 
 # Verification Before Completion

@@ -1,6 +1,6 @@
 ---
 name: finishing-a-development-branch
-description: Use when a development branch is complete, all tests pass, and the developer needs to choose between local merge, pull request, or cleanup.
+description: "Use when feature is done, all tests pass, and user needs to merge, create PR, or clean up. Examples: merge, pull request, PR, finish branch, done with feature, cleanup, ship."
 ---
 
 # Finishing a Development Branch

@@ -1,10 +1,6 @@
 ---
 name: test-driven-development
-description: Apply when implementing features, fixing bugs, or refactoring. Enforces test-first cycles: write a failing test, implement minimal code to pass, then refactor. Prevents code-before-test, tests-after-implementation, and rationalized exceptions.
-license: MIT
-compatibility: opencode
-metadata:
-  version: 1.0.0
+description: "Use when writing tests, implementing features, fixing bugs, or refactoring. Examples: write tests, test coverage, unit test, integration test, TDD, failing test, test suite."
 ---
 
 # Test-Driven Development
