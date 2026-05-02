@@ -4,7 +4,7 @@ Before responding to ANY user message, evaluate whether a skill applies. Skills 
 
 ## Trigger Table
 
-The table below lists **intent patterns**, not exact keyword matches. Evaluate the user's intent — if the scenario fits, invoke the skill even if none of the example phrases appear verbatim.
+The table below lists intent patterns, not exact keyword matches. Evaluate the user's intent — if the scenario fits, invoke the skill even if none of the example phrases appear verbatim.
 
 | User Intent / Scenario | Skill to Invoke |
 |------------------------|-----------------|
@@ -27,7 +27,7 @@ The table below lists **intent patterns**, not exact keyword matches. Evaluate t
 ## Process
 
 1. Read the user message
-2. Evaluate the user's **intent** against the trigger table — do not rely on exact keyword matching
+2. Evaluate the user's intent against the trigger table — do not rely on exact keyword matching
 3. If the scenario fits, invoke `skill({ name: "skill-name" })` BEFORE responding
 4. If multiple skills match, invoke in priority order (see below)
 5. If no match, proceed normally
@@ -74,3 +74,23 @@ dispatching-parallel-agents → (integrate results) → verification-before-comp
 - Skills are loaded via the `skill` tool, not `read`
 - User instructions take precedence over skills when they conflict
 - Skill chaining follows the documented workflows
+
+# Parallel Tool Calls
+
+Prefer making multiple independent tool calls in a single message rather than sequencing them. This applies to:
+- Reading multiple files simultaneously
+- Running independent bash commands (e.g., `git status` + `git diff` + `git log`)
+- Searching for files and content in parallel (Glob + Grep)
+- Dispatching multiple subagents for unrelated tasks
+
+Do NOT batch dependent operations (where one result is needed before the next can proceed).
+## MCP Server Usage
+
+The following MCP servers are available and should be used for their specific purposes:
+
+| Server | When to Use |
+|--------|-------------|
+| Context7 | API docs, usage patterns, code examples for libraries/frameworks. Use when you know the library name and need authoritative docs, parameter signatures, or best practices. Resolves library IDs first, then queries. Examples: "How do I use `useEffect` in React?", "Next.js App Router API reference" |
+| Tavily | Live web content, current events, non-API references. Use when Context7 can't answer, you need real-time info, or the topic isn't a library/framework's official docs. Examples: "Latest Python 3.13 release notes", "pricing for Vercel", "blog post about RAG patterns" |
+| Playwright | Browser automation. Navigating pages, taking screenshots, testing UI interactions, inspecting rendered content |
+
