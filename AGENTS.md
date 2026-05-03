@@ -96,6 +96,6 @@ The following MCP servers are available and should be used for their specific pu
 
 # Subagents
 Always when using subagents, read the skill `subagent-driven-development` for best practices. In addition:
-- Explore subagent should only be used to return summarized information of files or directories, not for executing complex tasks or workflows. For any task that requires multiple steps, decision-making, or interactions, use a dedicated subagent with a clear purpose and defined behavior. Avoid using it for ruturning full contents of files, for that purpose you must read the file yourself.
+- Explore subagent should only be used to return summarized information of files or directories or for discovering patterns, not for executing complex tasks or workflows. For any task that requires multiple steps, decision-making, or interactions, use a dedicated subagent with a clear purpose and defined behavior. Avoid using it for ruturning full contents of files, for that purpose you must read the file yourself.
 - Subagents should be designed to handle specific, well-defined tasks that can be completed in a single invocation. If a task requires multiple interactions, consider breaking it down into smaller subagents or using the main agent to orchestrate the workflow.
 
