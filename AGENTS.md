@@ -1,6 +1,6 @@
 # Skill Invocation Rules
 
-Before responding to ANY user message, evaluate whether a skill applies. Skills are loaded via the `skill` tool: `skill({ name: "skill-name" })`.
+Before responding to ANY user message, evaluate whether a skill applies. Skills are loaded via the `skill` tool: `skill({ name: "skill-name" })`. Skills should not be loaded via `read` or any other tool. If a skill applies, it MUST be invoked BEFORE responding. If multiple skills apply, invoke all relevant skills in the priority order outlined below.
 
 ## Trigger Table
 
@@ -93,4 +93,9 @@ The following MCP servers are available and should be used for their specific pu
 | Context7 | API docs, usage patterns, code examples for libraries/frameworks. Use when you know the library name and need authoritative docs, parameter signatures, or best practices. Resolves library IDs first, then queries. Examples: "How do I use `useEffect` in React?", "Next.js App Router API reference" |
 | Tavily | Live web content, current events, non-API references. Use when Context7 can't answer, you need real-time info, or the topic isn't a library/framework's official docs. Examples: "Latest Python 3.13 release notes", "pricing for Vercel", "blog post about RAG patterns" |
 | Playwright | Browser automation. Navigating pages, taking screenshots, testing UI interactions, inspecting rendered content |
+
+# Subagents
+Always when using subagents, read the skill `subagent-driven-development` for best practices. In addition:
+- Explore subagent should only be used to return summarized information of files or directories, not for executing complex tasks or workflows. For any task that requires multiple steps, decision-making, or interactions, use a dedicated subagent with a clear purpose and defined behavior. Avoid using it for ruturning full contents of files, for that purpose you must read the file yourself.
+- Subagents should be designed to handle specific, well-defined tasks that can be completed in a single invocation. If a task requires multiple interactions, consider breaking it down into smaller subagents or using the main agent to orchestrate the workflow.
 
