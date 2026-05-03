@@ -4,25 +4,36 @@ Before responding to ANY user message, evaluate whether a skill applies. Skills 
 
 ## Trigger Table
 
-The table below lists intent patterns, not exact keyword matches. Evaluate the user's intent — if the scenario fits, invoke the skill even if none of the example phrases appear verbatim.
+Evaluate the user's intent — if the scenario fits, invoke the skill even if no example phrase appears verbatim.
 
 | User Intent / Scenario | Skill to Invoke |
 |------------------------|-----------------|
-| Creating features, building components, designing systems (e.g., "build", "add", "create", "design", "implement") | brainstorming |
-| Debugging issues, fixing bugs, investigating failures (e.g., "bug", "error", "broken", "not working", "crash") | systematic-debugging |
-| Writing or improving tests (e.g., "tests", "coverage", "TDD", "test suite") | test-driven-development |
-| About to claim work is complete, commit, or create PR | verification-before-completion |
-| Requesting code review or feedback on changes (e.g., "review", "check my changes", "is this ready") | requesting-code-review |
-| Receiving and acting on review feedback (e.g., "reviewer says", "PR comments", "feedback") | receiving-code-review |
-| Executing an existing implementation plan (e.g., "implement this plan", "run the tasks") | subagent-driven-development or executing-plans |
-| Wrapping up work on a branch (e.g., "merge", "PR", "finish", "ship", "done") | finishing-a-development-branch |
-| Working with Python code | python-patterns |
-| Writing Python tests | python-testing |
-| Building React, Next.js, or frontend components | frontend-patterns |
-| Visual design, UI/UX, styling, making things look good | frontend-design |
-| Creating or modifying skills | skill-creator |
-| Multiple independent problems to solve simultaneously | dispatching-parallel-agents |
-| Creating an implementation plan from a spec or requirements | writing-plans |
+| Product strategy, direction, active tracks | ce-strategy |
+| Idea generation, big-picture ideation | ce-ideate |
+| Feature brainstorming, requirements exploration, collaborative dialogue | ce-brainstorm |
+| Planning implementation, creating or deepening plans | ce-plan |
+| Executing work, implementing plans, shipping features | ce-work |
+| Debugging, investigating bugs, tracing errors, fixing failures | ce-debug |
+| Code review before PR, reviewing changes | ce-code-review |
+| Resolving PR review feedback, addressing reviewer comments | ce-resolve-pr-feedback |
+| Documenting solved problems, compounding knowledge | ce-compound |
+| Refreshing stale learning docs in docs/solutions/ | ce-compound-refresh |
+| Committing changes | ce-commit |
+| Committing, pushing, and creating a PR | ce-commit-push-pr |
+| Frontend design, UI/UX, visual quality | ce-frontend-design |
+| Optimizing performance, iterative optimization loops | ce-optimize |
+| Simplifying code, reducing complexity | ce-simplify-code |
+| Reviewing requirements or plan documents | ce-doc-review |
+| Agent-native architecture, building agent-accessible features | ce-agent-native-architecture |
+| Auditing agent-native architecture | ce-agent-native-audit |
+| Creating git worktrees for parallel work | ce-worktree |
+| Product pulse reports, health checks | ce-product-pulse |
+| Polishing UI in browser | ce-polish-beta |
+| DHH-style Rails code | ce-dhh-rails-style |
+| Browser testing | ce-test-browser |
+| Session history, searching past work | ce-sessions |
+| Cleanup gone branches | ce-clean-gone-branches |
+| Full autonomous engineering lifecycle | lfg |
 
 ## Process
 
@@ -35,45 +46,48 @@ The table below lists intent patterns, not exact keyword matches. Evaluate the u
 ## Skill Priority
 
 When multiple skills could apply:
-1. Process skills first: brainstorming, systematic-debugging
-2. Implementation skills second: test-driven-development, writing-plans, subagent-driven-development, executing-plans
-3. Review skills last: requesting-code-review, verification-before-completion
+1. Strategy/ideation skills first: ce-strategy, ce-ideate
+2. Exploration skills second: ce-brainstorm, ce-plan
+3. Execution skills third: ce-work, ce-debug
+4. Review/quality skills last: ce-code-review, ce-doc-review, ce-compound
 
-## Skill Chaining
+## Core Workflow
 
-Skills form workflows. Follow these chains:
+```
+ce-strategy → ce-ideate → ce-brainstorm → ce-plan → ce-work → ce-code-review → ce-compound → (repeat)
+```
 
 ### Feature Development
 ```
-brainstorming → writing-plans → subagent-driven-development (or executing-plans) → finishing-a-development-branch
+ce-brainstorm → ce-plan → ce-work → ce-commit-push-pr → ce-compound
 ```
 
 ### Bug Fix
 ```
-systematic-debugging → test-driven-development → verification-before-completion
+ce-debug → (fix) → ce-code-review → ce-compound
 ```
 
 ### Code Review
 ```
-requesting-code-review → (fix issues) → verification-before-completion
+ce-code-review → ce-resolve-pr-feedback → (compound if generalizable)
 ```
 
-### Receiving Review Feedback
+### Knowledge Compounding
 ```
-receiving-code-review → (implement fixes) → verification-before-completion
-```
-
-### Parallel Investigation
-```
-dispatching-parallel-agents → (integrate results) → verification-before-completion
+ce-compound → ce-compound-refresh (periodic refresh of docs/solutions/)
 ```
 
-## Success Criteria
+### Document Review
+```
+ce-doc-review (for requirements docs, plan docs, or any structured document)
+```
 
-- Relevant skills are invoked before any response
-- Skills are loaded via the `skill` tool, not `read`
+## Rules
+
+- Skills must be loaded via the `skill` tool, not `read`
 - User instructions take precedence over skills when they conflict
-- Skill chaining follows the documented workflows
+- Knowledge is compounded into `docs/solutions/` when generalizable insights are discovered
+- The core workflow is followed: strategy → ideate → brainstorm → plan → work → review → compound
 
 # Parallel Tool Calls
 
@@ -84,18 +98,28 @@ Prefer making multiple independent tool calls in a single message rather than se
 - Dispatching multiple subagents for unrelated tasks
 
 Do NOT batch dependent operations (where one result is needed before the next can proceed).
-## MCP Server Usage
 
-The following MCP servers are available and should be used for their specific purposes:
+## MCP Server Usage
 
 | Server | When to Use |
 |--------|-------------|
-| Context7 | API docs, usage patterns, code examples for libraries/frameworks. Use when you know the library name and need authoritative docs, parameter signatures, or best practices. Resolves library IDs first, then queries. Examples: "How do I use `useEffect` in React?", "Next.js App Router API reference" |
-| Tavily | Live web content, current events, non-API references. Use when Context7 can't answer, you need real-time info, or the topic isn't a library/framework's official docs. Examples: "Latest Python 3.13 release notes", "pricing for Vercel", "blog post about RAG patterns" |
-| Playwright | Browser automation. Navigating pages, taking screenshots, testing UI interactions, inspecting rendered content |
+| Context7 | API docs, usage patterns, code examples for libraries/frameworks. Resolves library IDs first, then queries. |
+| Tavily | Live web content, current events, non-API references. Use when Context7 can't answer, you need real-time info, or the topic isn't a library/framework's official docs. |
+| Playwright | Browser automation. Navigating pages, taking screenshots, testing UI interactions, inspecting rendered content. |
 
 # Subagents
-Always when using subagents, read the skill `subagent-driven-development` for best practices. In addition:
-- Explore subagent should only be used to return summarized information of files or directories or for discovering patterns, not for executing complex tasks or workflows. For any task that requires multiple steps, decision-making, or interactions, use a dedicated subagent with a clear purpose and defined behavior. Avoid using it for ruturning full contents of files, for that purpose you must read the file yourself.
-- Subagents should be designed to handle specific, well-defined tasks that can be completed in a single invocation. If a task requires multiple interactions, consider breaking it down into smaller subagents or using the main agent to orchestrate the workflow.
 
+49 specialized agent personas are available. Key categories:
+
+- **Always-on reviewers:** correctness, testing, maintainability, project-standards, agent-native, learnings-researcher
+- **Cross-cutting conditional reviewers:** security, performance, API-contract, data-migrations, reliability, adversarial, previous-comments
+- **Stack-specific reviewers:** DHH-rails, Kieran-rails/python/typescript, Julik-frontend-races, Swift-iOS
+- **Research agents:** repo-research-analyst, learnings-researcher, web-researcher, framework-docs-researcher, best-practices-researcher, session-historian
+- **Design agents:** design-iterator, figma-design-sync, design-implementation-reviewer
+- **Specialized agents:** schema-drift-detector, deployment-verification-agent, architecture-strategist, data-migration-expert, pattern-recognition-specialist
+
+When dispatching subagents:
+- Provide structured context (intent summary, file list, diff, plan path when available)
+- Dispatch independent research agents in parallel
+- Respect model tiering: correctness, security, and adversarial reviewers inherit the session model; all others use the platform's mid-tier model
+- Subagents should handle specific, well-defined tasks that can be completed in a single invocation
