@@ -58,7 +58,13 @@
     }
   },
   "permission": {
-    "webfetch": "deny"
+    "webfetch": "deny",
+    "skill": {
+      "ce-polish-beta": "deny",
+      "ce-agent-native-audit": "deny",
+      "ce-work-beta": "deny",
+      "lfg": "deny"
+    }
   },
   "lsp": {
     "pyright": {

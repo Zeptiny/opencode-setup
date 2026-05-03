@@ -2,43 +2,12 @@
 
 Before responding to ANY user message, evaluate whether a skill applies. Skills are loaded via the `skill` tool: `skill({ name: "skill-name" })`. Skills should not be loaded via `read` or any other tool. If a skill applies, it MUST be invoked BEFORE responding. If multiple skills apply, invoke all relevant skills in the priority order outlined below.
 
-## Trigger Table
-
-Evaluate the user's intent — if the scenario fits, invoke the skill even if no example phrase appears verbatim.
-
-| User Intent / Scenario | Skill to Invoke |
-|------------------------|-----------------|
-| Product strategy, direction, active tracks | ce-strategy |
-| Idea generation, big-picture ideation | ce-ideate |
-| Feature brainstorming, requirements exploration, collaborative dialogue | ce-brainstorm |
-| Planning implementation, creating or deepening plans | ce-plan |
-| Executing work, implementing plans, shipping features | ce-work |
-| Debugging, investigating bugs, tracing errors, fixing failures | ce-debug |
-| Code review before PR, reviewing changes | ce-code-review |
-| Resolving PR review feedback, addressing reviewer comments | ce-resolve-pr-feedback |
-| Documenting solved problems, compounding knowledge | ce-compound |
-| Refreshing stale learning docs in docs/solutions/ | ce-compound-refresh |
-| Committing changes | ce-commit |
-| Committing, pushing, and creating a PR | ce-commit-push-pr |
-| Frontend design, UI/UX, visual quality | ce-frontend-design |
-| Optimizing performance, iterative optimization loops | ce-optimize |
-| Simplifying code, reducing complexity | ce-simplify-code |
-| Reviewing requirements or plan documents | ce-doc-review |
-| Agent-native architecture, building agent-accessible features | ce-agent-native-architecture |
-| Auditing agent-native architecture | ce-agent-native-audit |
-| Creating git worktrees for parallel work | ce-worktree |
-| Product pulse reports, health checks | ce-product-pulse |
-| Polishing UI in browser | ce-polish-beta |
-| DHH-style Rails code | ce-dhh-rails-style |
-| Browser testing | ce-test-browser |
-| Session history, searching past work | ce-sessions |
-| Cleanup gone branches | ce-clean-gone-branches |
-| Full autonomous engineering lifecycle | lfg |
+Each skill's `description` field contains its trigger conditions — evaluate the user's intent against those descriptions and invoke the matching skill even if no example phrase appears verbatim.
 
 ## Process
 
 1. Read the user message
-2. Evaluate the user's intent against the trigger table — do not rely on exact keyword matching
+2. Evaluate the user's intent against skill descriptions
 3. If the scenario fits, invoke `skill({ name: "skill-name" })` BEFORE responding
 4. If multiple skills match, invoke in priority order (see below)
 5. If no match, proceed normally

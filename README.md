@@ -1,4 +1,4 @@
-My personal Opencode configuration and skills.
+My personal OpenCode configuration, based on [compound-engineering](https://github.com/compoundengineering/compound-engineering).
 
 # LSPs
 ## Pyright
@@ -11,38 +11,67 @@ npm install -g pyright
 pip install ruff
 ```
 
+# Skills
+
+All skills live in `skills/` and are loaded on-demand via the `skill` tool. Each SKILL.md has a `description` field with trigger conditions — the LLM evaluates user intent against those descriptions to decide when to invoke.
+
+| Skill | Purpose |
+|-------|---------|
+| `ce-strategy` | Create or maintain STRATEGY.md |
+| `ce-ideate` | Generate and critically evaluate grounded ideas |
+| `ce-brainstorm` | Collaborative requirements exploration and dialogue |
+| `ce-plan` | Create or deepen structured implementation plans |
+| `ce-work` | Execute work — implement plans, ship features |
+| `ce-work-beta` | Execute work with experimental Codex delegation |
+| `ce-debug` | Systematically find root causes and fix bugs |
+| `ce-code-review` | Structured code review with tiered persona agents |
+| `ce-resolve-pr-feedback` | Resolve PR review feedback |
+| `ce-doc-review` | Review requirements or plan documents |
+| `ce-compound` | Document solved problems to compound team knowledge |
+| `ce-compound-refresh` | Refresh stale learning docs in docs/solutions/ |
+| `ce-commit` | Create a git commit with a clear message |
+| `ce-commit-push-pr` | Commit, push, and open a PR in one step |
+| `ce-frontend-design` | Build web interfaces with genuine design quality |
+| `ce-optimize` | Metric-driven iterative optimization loops |
+| `ce-simplify-code` | Simplify recently changed code |
+| `ce-agent-native-architecture` | Build agent-first applications |
+| `ce-agent-native-audit` | Audit agent-native architecture with scored principles |
+| `ce-worktree` | Create isolated git worktrees for parallel work |
+| `ce-product-pulse` | Time-windowed pulse reports on product performance |
+| `ce-polish-beta` | Iterate on UI improvements in a browser |
+| `ce-dhh-rails-style` | Write Ruby/Rails in DHH/37signals style |
+| `ce-test-browser` | Run browser tests on pages affected by a PR |
+| `ce-sessions` | Search past coding agent session history |
+| `ce-session-inventory` | Discover session files and extract metadata |
+| `ce-session-extract` | Extract conversation skeleton from a session file |
+| `ce-clean-gone-branches` | Clean up local branches whose remote is gone |
+| `lfg` | Full autonomous engineering workflow |
+
+## Model-restricted skills
+
+These skills have `disable-model-invocation: true` in their frontmatter and an `deny` permission in `opencode.json` — the LLM cannot auto-invoke them:
+
+- `ce-polish-beta`
+- `ce-agent-native-audit`
+- `ce-work-beta`
+- `lfg`
+
 # Agents
 
-Preconfigured subagents in `agents/`:
+Preconfigured subagents in `agents/`. These are dispatched by skills (e.g., `ce-code-review`, `ce-doc-review`) or manually via the `task` tool.
 
-| Agent | Purpose |
-|-------|---------|
-| `code-reviewer` | General code review — bugs, architecture, testing, production readiness |
-| `code-quality-reviewer` | Code quality review (use after spec compliance is confirmed) |
-| `security-reviewer` | **Deep security audit** — injection, auth, crypto, RCE, data exposure with strict false-positive filtering |
-| `spec-reviewer` | Verify implementation matches specification exactly |
-| `spec-document-reviewer` | Review design specs for completeness and consistency |
-| `plan-reviewer` | Review implementation plans for completeness and buildability |
-| `implementer` | Implement specific tasks from a plan |
-
-# Commands
-
-Custom command templates in `commands/`:
-
-| Command | Description |
-|---------|-------------|
-| `full-review` | Orchestrates **parallel** general code review + deep security review, then synthesizes a unified report |
-
-To use `full-review`, invoke it in OpenCode (e.g., `/full-review` or `/full-review main` depending on your OpenCode command registration). It will:
-1. Gather diff context and full file contents
-2. Dispatch `code-reviewer` and `security-reviewer` subagents in parallel
-3. Merge and deduplicate findings (security framing takes priority on overlaps)
-4. Output a unified markdown report
+| Category | Agents |
+|----------|--------|
+| **Always-on reviewers** | `ce-correctness-reviewer`, `ce-testing-reviewer`, `ce-maintainability-reviewer`, `ce-project-standards-reviewer`, `ce-agent-native-reviewer`, `ce-learnings-researcher` |
+| **Conditional reviewers** | `ce-adversarial-reviewer`, `ce-adversarial-document-reviewer`, `ce-security-reviewer`, `ce-security-sentinel`, `ce-security-lens-reviewer`, `ce-performance-reviewer`, `ce-performance-oracle`, `ce-api-contract-reviewer`, `ce-data-migrations-reviewer`, `ce-data-migration-expert`, `ce-data-integrity-guardian`, `ce-reliability-reviewer`, `ce-previous-comments-reviewer`, `ce-schema-drift-detector` |
+| **Stack-specific reviewers** | `ce-dhh-rails-reviewer`, `ce-kieran-rails-reviewer`, `ce-kieran-python-reviewer`, `ce-kieran-typescript-reviewer`, `ce-julik-frontend-races-reviewer`, `ce-swift-ios-reviewer` |
+| **Research agents** | `ce-repo-research-analyst`, `ce-web-researcher`, `ce-framework-docs-researcher`, `ce-best-practices-researcher`, `ce-session-historian`, `ce-issue-intelligence-analyst`, `ce-git-history-analyzer` |
+| **Design agents** | `ce-design-iterator`, `ce-figma-design-sync`, `ce-design-implementation-reviewer`, `ce-design-lens-reviewer` |
+| **Document reviewers** | `ce-coherence-reviewer`, `ce-feasibility-reviewer`, `ce-scope-guardian-reviewer`, `ce-product-lens-reviewer`, `ce-spec-flow-analyzer` |
+| **Specialized** | `ce-architecture-strategist`, `ce-deployment-verification-agent`, `ce-pattern-recognition-specialist`, `ce-pr-comment-resolver`, `ce-code-simplicity-reviewer`, `ce-ankane-readme-writer` |
 
 # Sources
-The skills were sourced from:
-- https://github.com/obra/superpowers
-- https://github.com/anthropics/skills
+- https://github.com/compoundengineering/compound-engineering
 
 # Plugins
 - https://github.com/Zeptiny/opencode-skill-injection-plugin
@@ -50,166 +79,44 @@ The skills were sourced from:
 # Third-party tools
 - https://github.com/junhoyeo/tokscale
 
-# Changes
-## using-superpowers/SKILL.md
-- Replaced multi-platform instructions (Claude Code, Copilot CLI, Gemini CLI, Codex) with single OpenCode section referencing skill tool (skill({ name: "skill-name" }))
-- Removed non-existent references/copilot-tools.md and references/codex-tools.md references
-- Kept CLAUDE.md and GEMINI.md in instruction priority (they still need to be read if present)
-- Renamed TodoWrite → todowrite in process flow nodes and text
-- Renamed Skill → skill in process flow nodes and description
-- Added AGENTS.md to instruction priority list
+# Changes from upstream compound-engineering
 
-## dispatching-parallel-agents/SKILL.md
-- Changed Task("Fix...") syntax to OpenCode task(subagent_type="general", description=..., prompt=...) format
-- Replaced "In Claude Code / AI environment" comment with OpenCode-specific guidance
-- Replaced emoji-style anti-patterns (❌/✅) with labeled prose (Too broad/Specific, No context/Context, etc.) in Common Mistakes section
+## Removed skills
+- `ce-slack-research` — Slack is not used
+- `ce-demo-reel` — Not needed
+- `ce-report-bug` — Not needed
+- `ce-setup` — Not needed
+- `ce-release-notes` — Not needed
+- `ce-proof` — Not needed
+- `ce-gemini-imagegen` — Not needed
+- `ce-test-xcode` — Not needed
 
-## subagent-driven-development/SKILL.md
-- Renamed all TodoWrite → todowrite (process flow + body text)
-- Changed docs/superpowers/plans/ → docs/plans/
-- Changed ~/.config/superpowers/hooks/ → ~/.config/opencode/hooks/
-- Removed all superpowers: prefixes from cross-skill references (6 entries in Integration section)
-- Changed superpowers:finishing-a-development-branch → finishing-a-development-branch in process flow
+## Removed agents
+- `ce-slack-researcher` — Slack is not used
 
-### agents/implementer.md
-- Moved from skills/subagent-driven-development/implementer-prompt.md
-- Transformed from prompt template into standalone agent
-- Removed template placeholders and task tool wrapper
+## Skill description updates
+All skill `description` fields now include trigger conditions ("Use when…") so the LLM can evaluate user intent without relying on a separate trigger table. Updated skills:
+- `ce-compound` — added auto-invoke trigger phrases ("that worked", "it's fixed", "working now", "problem solved")
+- `lfg` — added trigger phrases ("lfg", "full send", "ship it end-to-end")
+- `ce-work-beta` — added Codex delegation trigger phrases ("use codex", "delegate to codex")
+- `ce-work` — added execution trigger phrases ("do the work", "implement this", "execute the plan")
+- `ce-simplify-code` — added simplification trigger phrases ("simplify this", "clean up this code", "reduce complexity")
+- `ce-agent-native-audit` — added audit trigger phrases ("audit agent-native", "check agent parity")
+- `ce-polish-beta` — added polish trigger phrases ("polish this", "iterate on this visually")
+- `ce-test-browser` — added browser testing trigger phrases ("test this in the browser", "run browser tests")
 
-### agents/spec-reviewer.md
-- Moved from skills/subagent-driven-development/spec-reviewer-prompt.md
-- Transformed from prompt template into standalone agent
-- Removed template placeholders and task tool wrapper
+## Cross-reference cleanup
+Removed all references to deleted skills from remaining files:
+- `ce-plan/SKILL.md` and `references/plan-handoff.md` — removed Slack context dispatch and Proof HITL handoff
+- `ce-ideate/SKILL.md` and `references/post-ideation-workflow.md` — removed Slack context section, Proof save/share/caller-aware return, Proof Failure Ladder
+- `ce-brainstorm/SKILL.md` and `references/handoff.md`, `references/universal-brainstorming.md` — removed Slack context section, Proof HITL option and return-status handling
+- `ce-commit-push-pr/SKILL.md` and `references/pr-description-writing.md` — removed ce-demo-reel capture flow and URL references
+- `ce-work/references/shipping-workflow.md` — removed ce-demo-reel reference
+- `ce-work-beta/references/shipping-workflow.md` — removed ce-demo-reel reference
+- `ce-frontend-design/SKILL.md` — replaced `/ce-setup` install reference
+- `ce-test-browser/SKILL.md` — replaced `/ce-setup` install references
+- `agents/ce-best-practices-researcher.md` — removed ce-gemini-imagegen from tool routing
 
-### agents/code-quality-reviewer.md
-- Moved from skills/subagent-driven-development/code-quality-reviewer-prompt.md
-- Transformed from prompt template into standalone agent
-- Combined standard code review checklist with subagent-driven-development specific checks
-requesting-code-review/SKILL.md
-- Changed superpowers:code-reviewer subagent → code-reviewer subagent
-- Changed Use Task tool with superpowers:code-reviewer type → Use the task tool (subagent_type: general)
-- Changed docs/superpowers/plans/ → docs/plans/
-- Updated subagent dispatch example
+## opencode.json
+- Added `deny` permission for model-restricted skills (`ce-polish-beta`, `ce-agent-native-audit`, `ce-work-beta`, `lfg`)
 
-## executing-plans/SKILL.md
-- Changed TodoWrite → todowrite
-- Changed superpowers:finishing-a-development-branch → finishing-a-development-branch
-- Changed platform-agnostic note to OpenCode-specific text mentioning task tool
-- Removed superpowers: prefix from 3 cross-skill references
-- Changed subagent-driven-development note from "use instead" to "check and ask the user" approach
-
-## writing-plans/SKILL.md
-- Changed docs/superpowers/plans/ → docs/plans/ (3 occurrences)
-- Removed superpowers: prefix from 3 cross-skill references
-- Added Plan Review section with plan-reviewer subagent dispatch instructions
-
-### agents/plan-reviewer.md
-- Moved from skills/writing-plans/plan-document-reviewer-prompt.md
-- Transformed from prompt template into standalone agent with proper frontmatter
-- Removed template placeholders and Task tool wrapper
-
-## writing-skills/SKILL.md
-- Changed ~/.claude/skills → ~/.config/opencode/skills and added OpenCode to the list
-- Changed TodoWrite → todowrite
-- Removed superpowers: prefix from 4 cross-skill references
-
-### writing-skills/persuasion-principles.md
-- Changed TodoWrite → todowrite (3 occurrences)
-
-### writing-skills/testing-skills-with-subagents.md
-- Removed superpowers: prefix from cross-skill reference
-
-## using-git-worktrees/SKILL.md
-- Changed CLAUDE.md → AGENTS.md (6 occurrences)
-- Changed ~/.config/superpowers/worktrees/ → ~/.config/opencode/worktrees/ (2 occurrences)
-
-## brainstorming/SKILL.md
-- Changed docs/superpowers/specs/ → docs/specs/ (2 occurrences)
-- Removed all Visual Companion references (checklist, flowchart, section)
-- Added Spec Document Review section with spec-document-reviewer subagent dispatch
-- Renumbered checklist items after removing visual companion step
-
-### agents/spec-document-reviewer.md
-- Moved from skills/brainstorming/spec-document-reviewer-prompt.md
-- Transformed from prompt template into standalone agent with proper frontmatter
-- Removed template placeholders and Task tool wrapper
-
-### Removed files
-- skills/brainstorming/visual-companion.md
-- skills/brainstorming/scripts/start-server.sh
-- skills/brainstorming/scripts/stop-server.sh
-
-## systematic-debugging/SKILL.md
-- Consolidated into single file per OpenCode skill conventions
-- Inlined content from root-cause-tracing.md, defense-in-depth.md, and condition-based-waiting.md as new Technique sections
-
-- Replaced external file references with internal section links
-- Changed superpowers:test-driven-development → test-driven-development (2 occurrences)
-- Changed superpowers:verification-before-completion → verification-before-completion
-- Removed language-specific code examples (bash, TypeScript) and replaced them with language-agnostic conceptual descriptions
-- Replaced concrete implementation snippets (waitFor polling, stack trace capture, multi-layer diagnostics) with prose algorithm descriptions
-- Changed Defense in Depth table examples from code snippets to descriptive explanations
-- Replaced emoji-style anti-patterns (❌/✅) with labeled prose (Anti-pattern/Fix) in Condition-Based Waiting section
-
-### Removed files
-- skills/systematic-debugging/root-cause-tracing.md
-- skills/systematic-debugging/defense-in-depth.md
-- skills/systematic-debugging/condition-based-waiting.md
-- skills/systematic-debugging/condition-based-waiting-example.ts
-- skills/systematic-debugging/find-polluter.sh
-- skills/systematic-debugging/CREATION-LOG.md
-
-## test-driven-development/SKILL.md
-- Consolidated into single file per OpenCode skill conventions
-- Replaced external reference to testing-anti-patterns.md with inlined section
-- Inlined 4 unique anti-patterns with gate functions:
-  1. Testing Mock Behavior (with assertion gate)
-  2. Test-Only Methods in Production (with method-addition gate)
-  3. Mocking Without Understanding (with side-effect analysis gate)
-  4. Incomplete Mocks (with completeness gate)
-- Added "When Mocks Become Too Complex" subsection
-- Removed external file reference line
-
-### Removed files
-- skills/test-driven-development/testing-anti-patterns.md
-
-## python-patterns/SKILL.md
-- Rewrote description from generic summary to trigger-style: "Use when writing, creating, or modifying Python code, scripts, modules, packages, or applications..."
-
-## python-testing/SKILL.md
-- Rewrote description from generic summary to trigger-style: "Use when writing, creating, or modifying Python tests, test files, test suites, or testing infrastructure..."
-
-## frontend-patterns/SKILL.md
-- Rewrote description from generic summary to trigger-style: "Use when building, creating, or modifying frontend web applications, React components, Next.js pages..."
-
-## frontend-design/SKILL.md
-- Rewrote description to lead with "Use when..." and expanded trigger keywords (visual design, UI/UX, styling, layout, typography, colors, aesthetics, polished, modern, distinctive)
-
-## receiving-code-review/SKILL.md
-- Changed CLAUDE.md violation → AGENTS.md violation
-- Removed Forbidden Responses section
-- Removed YAGNI Check for "Professional" Features section
-- Removed Implementation Order section
-- Removed Acknowledging Correct Feedback section
-- Removed Gracefully Correcting Your Pushback section
-- Removed Common Mistakes table section
-- Removed Real Examples section
-- Removed GitHub Thread Replies section
-- Removed The Bottom Line section
-- Replaced emoji anti-patterns (❌/✅) with WRONG/RIGHT labels in Handling Unclear Feedback section
-- Trimmed When To Push Back section
-
-## python-patterns/SKILL.md
-- Removed `applyTo: "*.py"` from frontmatter
-
-## python-testing/SKILL.md
-- Removed `applyTo: "*.py"` from frontmatter
-
-## subagent-driven-development/SKILL.md
-- Removed emoji checkmarks (✅/❌) from review examples, replaced with plain text
-
-## writing-plans/SKILL.md
-- Removed user preference override note for plan location default
-
-## using-git-worktrees/SKILL.md
-- Deleted entire skill file

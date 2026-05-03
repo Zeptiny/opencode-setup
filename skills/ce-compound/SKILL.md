@@ -1,6 +1,6 @@
 ---
 name: ce-compound
-description: Document a recently solved problem to compound your team's knowledge
+description: "Document a recently solved problem to compound your team's knowledge. Use when a bug is fixed or a problem is solved, especially after phrases like 'that worked', 'it's fixed', 'working now', or 'problem solved'. Also invoke manually with /ce-compound to capture any resolved issue."
 ---
 
 # /ce-compound

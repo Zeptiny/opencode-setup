@@ -1,6 +1,6 @@
 ---
 name: ce-work
-description: Execute work efficiently while maintaining quality and finishing features
+description: "Execute work efficiently while maintaining quality and finishing features. Use when implementing plans, shipping features, or executing work defined in a plan doc. Invoke when the user says 'do the work', 'implement this', 'execute the plan', or when ce-brainstorm or ce-plan hand off to execution."
 argument-hint: "[Plan doc path or description of work. Blank to auto use latest plan doc]"
 ---
 
