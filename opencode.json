@@ -33,52 +33,6 @@
         "qwen3.5-plus":      { "limit": { "context": 262144, "output": 65536   } },
         "qwen3.6-plus":      { "limit": { "context": 262144, "output": 65536   } }
       }
-    },
-    "CrofAI": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "CrofAI",
-      "options": {
-        "baseURL": "https://crof.ai/v1",
-        "apiKey": "<CHANGE-ME>"
-      },
-      "models": {
-        "kimi-k2.6-precision": {
-          "limit": { "context": 262144, "output": 262144 },
-          "variants": {
-            "none": { "reasoningEffort": "none" },
-            "low": { "reasoningEffort": "low" },
-            "medium": { "reasoningEffort": "medium" },
-            "high": { "reasoningEffort": "high" }
-          }
-        },
-        "kimi-k2.5": {
-          "limit": { "context": 262144, "output": 262144 },
-          "variants": {
-            "none": { "reasoningEffort": "none" },
-            "low": { "reasoningEffort": "low" },
-            "medium": { "reasoningEffort": "medium" },
-            "high": { "reasoningEffort": "high" }
-          }
-        },
-        "glm-5.1": {
-          "limit": { "context": 202752, "output": 202752 },
-          "variants": {
-            "none": { "reasoningEffort": "none" },
-            "low": { "reasoningEffort": "low" },
-            "medium": { "reasoningEffort": "medium" },
-            "high": { "reasoningEffort": "high" }
-          }
-        },
-        "glm-5.1-precision": {
-          "limit": { "context": 202752, "output": 202752 },
-          "variants": {
-            "none": { "reasoningEffort": "none" },
-            "low": { "reasoningEffort": "low" },
-            "medium": { "reasoningEffort": "medium" },
-            "high": { "reasoningEffort": "high" }
-          }
-        }
-      }
     }
   },
   "mcp": {
